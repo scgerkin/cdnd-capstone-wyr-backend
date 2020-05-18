@@ -23,6 +23,11 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     LOG_LEVEL: debug
 
+    QUESTIONS_TABLE: questions-${self:service.name}-${self:provider.stage}
+    QUESTION_ID_INDEX: questionId
+    QUESTION_AUTHOR_ID_INDEX: authorId
+    QUESTION_CREATED_AT_INDEX: createdAt
+
 functions:
   hello:
     handler: handler.hello
@@ -31,4 +36,29 @@ functions:
           method: get
           path: hello
 
-#resources:
+resources:
+  Resources:
+    QuestionsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QUESTIONS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: ${self:provider.environment.QUESTION_ID_INDEX}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
+            KeyType: HASH
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.QUESTION_ID_INDEX}
+            KeySchema:
+              - AttributeName: ${self:provider.environment.QUESTION_ID_INDEX}
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
