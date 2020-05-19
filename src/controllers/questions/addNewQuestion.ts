@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyHandler =
       const request: CreateQuestionRequest = JSON.parse(event.body)
 
       if (!validCreateRequest(request)) {
-        return badRequest("Invalid create request." +
+        return badRequest("Invalid create request. " +
             "Option text cannot be null and must be at least 5 characters.", request)
       }
 
