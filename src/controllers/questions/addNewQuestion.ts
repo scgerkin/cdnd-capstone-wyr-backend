@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandler =
       }
 
       try {
-        const question: Question = addNewQuestion(request, userId)
+        const question: Question = await addNewQuestion(request, userId)
         return createSuccess(question)
       } catch (e) {
         return internalError(e)

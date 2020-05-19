@@ -13,7 +13,7 @@ const logger = createLogger("QuestionService");
  * @param authorId The ID of the user creating the new Question.
  * @return Created Question
  */
-export function addNewQuestion(request: CreateQuestionRequest, authorId: string): Question {
+export async function addNewQuestion(request: CreateQuestionRequest, authorId: string): Promise<Question> {
   logger.debug(
       "addNewQuestion initiated.",
       {
@@ -23,8 +23,8 @@ export function addNewQuestion(request: CreateQuestionRequest, authorId: string)
 
   const question: Question = {
     id: uuidv4(),
-    author: authorId,
-    timestamp: new Date().toISOString(),
+    authorId: authorId,
+    createdAt: new Date().toISOString(),
     optionOne: {
       text: request.optionOneText,
       votes: []
@@ -36,10 +36,12 @@ export function addNewQuestion(request: CreateQuestionRequest, authorId: string)
   }
   logger.info("Created new question.", {question: question})
 
-  repo.putNew(question).catch(e => {
+  try {
+    await repo.putNew(question);
+  } catch (e) {
     logger.error(e)
-    throw e
-  })
+    throw e;
+  }
 
   return question
 }

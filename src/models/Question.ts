@@ -1,8 +1,8 @@
 
 export interface Question {
   id:        string
-  author:    string
-  timestamp: string
+  authorId:    string
+  createdAt: string
   optionOne: Option
   optionTwo: Option
 }
