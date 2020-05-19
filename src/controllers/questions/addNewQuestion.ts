@@ -4,9 +4,13 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
+import {Question} from "../../models/Question"
+import {CreateQuestionRequest} from "../../requests/Question"
+import {addNewQuestion} from "../../services/QuestionService"
 import {createLogger} from "../../utils/logger";
-import invalidUserId from "../shared"
-import {getUserId, initiateLambda} from "../utils";
+import {badRequest, createSuccess, internalError} from "../shared"
+import {invalidUserId} from "../shared"
+import {getUserId, initiateLambda} from "../utils"
 
 const logger = createLogger("postNewQuestions")
 
@@ -23,6 +27,27 @@ export const handler: APIGatewayProxyHandler =
         return invalidUserId()
       }
 
-      return null
+      const request: CreateQuestionRequest = JSON.parse(event.body)
+
+      if (!validCreateRequest(request)) {
+        return badRequest("Invalid create request." +
+            "Option text cannot be null and must be at least 5 characters.", request)
+      }
+
+      try {
+        const question: Question = addNewQuestion(request, userId)
+        return createSuccess(question)
+      } catch (e) {
+        return internalError(e)
+      }
     }
 
+/**
+ * Validates that a Question.ts contains valid information.
+ * Fixme: Validation is very rudimentary.
+ * @param request The request to validate.
+ * @returns True if all required checks pass.
+ */
+function validCreateRequest(request: CreateQuestionRequest): Boolean {
+  return request.optionOneText.length >= 5 && request.optionTwoText.length >= 5
+}
