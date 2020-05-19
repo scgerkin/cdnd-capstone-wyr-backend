@@ -29,12 +29,18 @@ provider:
     QUESTION_CREATED_AT_INDEX: createdAt
 
 functions:
-  hello:
-    handler: handler.hello
+  AddNewQuestion:
+    handler: src/controllers/questions/addNewQuestion.handler
+    iamRoleStatementsName: AddNewQuestion
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
     events:
       - http:
-          method: get
-          path: hello
+          method: post
+          path: question
 
 resources:
   Resources:
