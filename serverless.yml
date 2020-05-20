@@ -49,7 +49,7 @@ functions:
 
   DeleteQuestion:
     handler: src/controllers/questions/deleteQuestion.handler
-    iamRoleStatementName: DeleteQuestion
+    iamRoleStatementsName: DeleteQuestion
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -66,7 +66,7 @@ functions:
 
   GetQuestionById:  # nts no auth
     handler: src/controllers/questions/getQuestionById.handler
-    iamRoleStatementName: GetQuestionById
+    iamRoleStatementsName: GetQuestionById
     iamRoleStatements:
     - Effect: Allow
       Action:
@@ -79,7 +79,7 @@ functions:
 
   GetQuestionsByAuthor:   # nts no auth
     handler: src/controllers/questions/getQuestionsByAuthor.handler
-    iamRoleStatementName: GetQuestionsByAuthor
+    iamRoleStatementsName: GetQuestionsByAuthor
     iamRoleStatements:
     - Effect: Allow
       Action:
@@ -93,7 +93,7 @@ functions:
   # fixme: rename this and all called functions
   GetAllQuestions:    # nts no auth
     handler: src/controllers/questions/getAllQuestions.handler
-    iamRoleStatementName: GetAllQuestions
+    iamRoleStatementsName: GetAllQuestions
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -103,6 +103,19 @@ functions:
       - http:
           method: get
           path: questions
+
+  HandleQuestionUpdateStream:
+    handler: src/controllers/questions/handleQuestionUpdateStream.handler
+    iamRoleStatementsName: HandleQuestionUpdateStream
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt QuestionsDynamoDBTable.StreamArn
 
 resources:
   Resources:

@@ -1,6 +1,6 @@
 import * as DynamoDB from "aws-sdk/clients/dynamodb"
 import {DocumentClient} from "aws-sdk/clients/dynamodb"
-import {Question} from "../models/Question";
+import {Question, QuestionDateRecord} from "../models/Question";
 
 import {createLogger} from "../utils/logger"
 
@@ -11,6 +11,7 @@ export const QUESTIONS_TABLE = process.env.QUESTIONS_TABLE
 export const QUESTION_ID_INDEX = process.env.QUESTION_ID_INDEX
 export const QUESTION_AUTHOR_ID_INDEX = process.env.QUESTION_AUTHOR_ID_INDEX
 export const QUESTION_CREATED_AT_INDEX = process.env.QUESTION_CREATED_AT_INDEX
+export const QUESTION_IDS_BY_DATE_TABLE = process.env.QUESTION_IDS_BY_DATE_TABLE
 
 export async function putNewQuestion(question: Question): Promise<Question> {
   logStart("putNewQuestion", question)
@@ -96,6 +97,21 @@ export async function queryByAuthorId(authorId: string): Promise<Question[]> {
   logResult(result)
 
   return result.Items as Question[]
+}
+
+export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
+  logStart("putDateRecord", {dateRecord: dateRecord})
+
+  const statement = {
+    TableName: QUESTION_IDS_BY_DATE_TABLE,
+    Item: dateRecord
+  }
+  logStatement(statement)
+
+  const result = await docClient.put(statement).promise()
+  logResult(result)
+
+  return dateRecord
 }
 
 function logStart(funcName, args?) {

@@ -18,7 +18,8 @@ export interface QuestionPartitionKey {
 }
 
 export interface QuestionDateRecord {
-  partitionKey: DatePartitionKey,
+  questionCreateDate: string,
+  createdAt: number,
   questionId: string
 }
 

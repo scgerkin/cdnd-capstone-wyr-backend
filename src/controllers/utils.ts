@@ -1,7 +1,7 @@
-import {APIGatewayProxyEvent, Context} from "aws-lambda";
+import {APIGatewayProxyEvent, Context, DynamoDBStreamEvent} from "aws-lambda";
 import {Logger} from "winston";
 
-export const initiateLambda = (logger: Logger, event: APIGatewayProxyEvent, context: Context) => {
+export const initiateLambda = (logger: Logger, event: APIGatewayProxyEvent | DynamoDBStreamEvent, context: Context) => {
   logger.log(
       "info",
       "Begin Lambda",
