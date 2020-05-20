@@ -22,7 +22,7 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
       })
 
   const question: Question = {
-    id: uuidv4(),
+    questionId: uuidv4(),
     authorId: authorId,
     createdAt: new Date().toISOString(),
     optionOne: {
@@ -63,6 +63,7 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
   try {
     question = await repo.queryByQuestionId(questionId)
   } catch (e) {
+    logger.error("Unable to retrieve question.", {questionId: questionId})
     logger.error(e)
     //todo sanitize, also should be a 400 on controller, but below will be 401
     throw e
@@ -76,6 +77,7 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
     await repo.deleteQuestion(question)
     return questionId
   } catch (e) {
+    logger.error("Unable to delete question.", {question: question})
     logger.error(e)
     // todo handle/sanitize
     throw e

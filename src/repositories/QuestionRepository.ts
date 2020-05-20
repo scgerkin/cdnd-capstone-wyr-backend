@@ -9,7 +9,7 @@ const docClient: DocumentClient = new DynamoDB.DocumentClient();
 
 export const QUESTIONS_TABLE = process.env.QUESTIONS_TABLE
 export const QUESTION_ID_INDEX = process.env.QUESTION_ID_INDEX
-export const AUTHOR_ID_INDEX = process.env.QUESTION_AUTHOR_ID_INDEX
+export const QUESTION_AUTHOR_ID_INDEX = process.env.QUESTION_AUTHOR_ID_INDEX
 export const QUESTION_CREATED_AT_INDEX = process.env.QUESTION_CREATED_AT_INDEX
 
 export async function putNewQuestion(question: Question): Promise<Question> {
@@ -19,7 +19,7 @@ export async function putNewQuestion(question: Question): Promise<Question> {
     TableName: QUESTIONS_TABLE,
     Item: question,
   }).promise()
-  logger.debug("Statement created.", {statement: statement})
+  logger.debug("Statement created.")
 
   await statement;
   logger.debug("Statement awaited.")
@@ -42,7 +42,7 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
       ":questionId": questionId,
     },
   }).promise()
-  logger.debug("Query created.", {query: query})
+  logger.debug("Query created.")
 
   const result = await query;
   logger.info("Query result", {result: result})
@@ -52,6 +52,7 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
       message: "Unable to retrieve question",
       questionId: questionId,
       result: result,
+      query: query
     })
     throw new Error(msg)
   }
@@ -72,15 +73,15 @@ export async function deleteQuestion(question: Question): Promise<Question> {
   const statement = docClient.delete({
     TableName: QUESTIONS_TABLE,
     Key: {
-      AUTHOR_ID_INDEX: question.authorId,
-      QUESTION_CREATED_AT_INDEX: question.createdAt
+      [QUESTION_AUTHOR_ID_INDEX]: question.authorId,
+      [QUESTION_CREATED_AT_INDEX]: question.createdAt
     },
     ConditionExpression: conditionExpression,
     ExpressionAttributeValues: {
-      ":questionId": question.id
+      ":questionId": question.questionId
     }
   }).promise()
-  logger.debug("Statement created.", {statement: statement})
+  logger.debug("Statement created.")
 
   await statement;
   logger.debug("Statement awaited.")

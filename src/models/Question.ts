@@ -1,10 +1,10 @@
 
 export interface Question {
-  id:        string
-  authorId:    string
-  createdAt: string
-  optionOne: Option
-  optionTwo: Option
+  questionId: string
+  authorId:   string
+  createdAt:  string
+  optionOne:  Option
+  optionTwo:  Option
 }
 
 export interface Option {
