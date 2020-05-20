@@ -46,6 +46,23 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
   return question
 }
 
+export async function getQuestionById(questionId: string): Promise<Question> {
+  logger.debug(
+      "deleteQuestion initiated.",
+      {
+        questionId: questionId,
+      })
+
+  try {
+    return await repo.queryByQuestionId(questionId)
+  } catch (e) {
+    logger.error("Unable to retrieve question.", {questionId: questionId})
+    logger.error(e)
+    //todo sanitize, also should be a 400 on controller, but below will be 401
+    throw e
+  }
+}
+
 /**
  * add-doc
  * @param questionId
@@ -59,15 +76,7 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
         userId: userId,
       })
 
-  let question: Question
-  try {
-    question = await repo.queryByQuestionId(questionId)
-  } catch (e) {
-    logger.error("Unable to retrieve question.", {questionId: questionId})
-    logger.error(e)
-    //todo sanitize, also should be a 400 on controller, but below will be 401
-    throw e
-  }
+  const question: Question = await getQuestionById(questionId)
 
   if (question.authorId !== userId) {
     throw new Error("Question does not belong to the requesting user.")

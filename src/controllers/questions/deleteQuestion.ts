@@ -12,9 +12,11 @@ import {getUserId, initiateLambda} from "../utils"
 const logger = createLogger("deleteQuestion")
 
 /**
- * add-doc
- * @param event
- * @param context
+ * Deletes a question from the database by questionId if the question was created
+ * by the current requesting user.
+ * @param event The current event containing path parameters for the question id.
+ * @param context The current context.
+ * @return APIGatewayProxyResult with the deleted questionId.
  */
 export const handler: APIGatewayProxyHandler =
     async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {

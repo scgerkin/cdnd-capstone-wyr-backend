@@ -41,6 +41,7 @@ functions:
       - http:
           method: post
           path: question
+
   DeleteQuestion:
     handler: src/controllers/questions/deleteQuestion.handler
     iamRoleStatementName: DeleteQuestion
@@ -57,6 +58,20 @@ functions:
       - http:
           method: delete
           path: question/{questionId}
+
+  GetQuestionById:
+    handler: src/controllers/questions/getQuestionById.handler
+    iamRoleStatementName: GetQuestionById
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_ID_INDEX}
+    events:
+      - http:
+          method: get
+          path: question/{questionId}
+
 
 resources:
   Resources:
