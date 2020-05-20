@@ -27,6 +27,9 @@ provider:
     QUESTION_ID_INDEX: questionId
     QUESTION_AUTHOR_ID_INDEX: authorId
     QUESTION_CREATED_AT_INDEX: createdAt
+
+    QUESTION_IDS_BY_DATE_TABLE: questions-by-date-${self:service.name}-${self:provider.stage}
+    DATE_TABLE_PARTITION_KEY_NAME: questionCreateDate
     RECENT_QUESTIONS_MAX_LIMIT: 40
 
 # todo version API, endpoint should be /api/v0/endpoint
@@ -87,6 +90,7 @@ functions:
           method: get
           path: questions/author/{authorId}
 
+  # fixme: rename this and all called functions
   GetAllQuestions:    # nts no auth
     handler: src/controllers/questions/getAllQuestions.handler
     iamRoleStatementName: GetAllQuestions
@@ -94,7 +98,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_CREATED_AT_INDEX}
     events:
       - http:
           method: get
@@ -128,3 +132,19 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
+
+    QuestionsDateDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: ${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+            KeyType: HASH
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            KeyType: RANGE
