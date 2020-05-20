@@ -2,7 +2,7 @@
 export interface Question {
   questionId: string
   authorId:   string
-  createdAt:  string
+  createdAt:  number
   optionOne:  Option
   optionTwo:  Option
 }

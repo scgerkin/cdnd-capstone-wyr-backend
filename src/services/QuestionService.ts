@@ -24,7 +24,7 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
   const question: Question = {
     questionId: uuidv4(),
     authorId: authorId,
-    createdAt: new Date().toISOString(),
+    createdAt: Date.now(),
     optionOne: {
       text: request.optionOneText,
       votes: [],
@@ -93,7 +93,17 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
   }
 }
 
-
+/**
+ * add-doc
+ * @param authorId
+ */
 export async function getQuestionsByAuthor(authorId: string): Promise<Question[]> {
   return await repo.queryByAuthorId(authorId)
+}
+
+/**
+ * add-doc
+ */
+export async function getAllQuestions(): Promise<Question[]> {
+  return await repo.queryAllQuestions()
 }
