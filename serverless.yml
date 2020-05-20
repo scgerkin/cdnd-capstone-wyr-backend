@@ -28,6 +28,7 @@ provider:
     QUESTION_AUTHOR_ID_INDEX: authorId
     QUESTION_CREATED_AT_INDEX: createdAt
 
+# todo version API, endpoint should be /api/v0/endpoint
 functions:
   AddNewQuestion:
     handler: src/controllers/questions/addNewQuestion.handler
@@ -40,7 +41,7 @@ functions:
     events:
       - http:
           method: post
-          path: question
+          path: questions
 
   DeleteQuestion:
     handler: src/controllers/questions/deleteQuestion.handler
@@ -57,7 +58,7 @@ functions:
     events:
       - http:
           method: delete
-          path: question/{questionId}
+          path: questions/{questionId}
 
   GetQuestionById:  # nts no auth
     handler: src/controllers/questions/getQuestionById.handler
@@ -85,6 +86,19 @@ functions:
           method: get
           path: questions/author/{authorId}
 
+#  GetAllQuestions:    # nts no auth
+#    handler: src/controllers/questions/getAllQuestions.handler
+#    iamRoleStatementName: GetAllQuestions
+#    iamRoleStatements:
+#    - Effect: Allow
+#      Action:
+#        - dynamodb:Query
+#      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+#      events:
+#        - http:
+#            method: get
+#            path: questions
+
 resources:
   Resources:
     QuestionsDynamoDBTable:
@@ -98,7 +112,7 @@ resources:
           - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
             AttributeType: S
           - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
-            AttributeType: S
+            AttributeType: N
         KeySchema:
           - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
             KeyType: HASH
