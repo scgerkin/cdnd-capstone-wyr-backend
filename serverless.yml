@@ -27,6 +27,7 @@ provider:
     QUESTION_ID_INDEX: questionId
     QUESTION_AUTHOR_ID_INDEX: authorId
     QUESTION_CREATED_AT_INDEX: createdAt
+    RECENT_QUESTIONS_MAX_LIMIT: 40
 
 # todo version API, endpoint should be /api/v0/endpoint
 functions:
@@ -86,18 +87,18 @@ functions:
           method: get
           path: questions/author/{authorId}
 
-#  GetAllQuestions:    # nts no auth
-#    handler: src/controllers/questions/getAllQuestions.handler
-#    iamRoleStatementName: GetAllQuestions
-#    iamRoleStatements:
-#    - Effect: Allow
-#      Action:
-#        - dynamodb:Query
-#      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
-#      events:
-#        - http:
-#            method: get
-#            path: questions
+  GetAllQuestions:    # nts no auth
+    handler: src/controllers/questions/getAllQuestions.handler
+    iamRoleStatementName: GetAllQuestions
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: questions
 
 resources:
   Resources:
@@ -106,6 +107,8 @@ resources:
       Properties:
         TableName: ${self:provider.environment.QUESTIONS_TABLE}
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
         AttributeDefinitions:
           - AttributeName: ${self:provider.environment.QUESTION_ID_INDEX}
             AttributeType: S

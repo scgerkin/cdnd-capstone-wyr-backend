@@ -12,6 +12,12 @@ import {initiateLambda} from "../utils"
 
 const logger = createLogger("getQuestionById")
 
+/**
+ * add-doc
+ * nts might need to paginate, could be optional param
+ * @param event
+ * @param context
+ */
 export const handler: APIGatewayProxyHandler =
     async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
       initiateLambda(logger, event, context)

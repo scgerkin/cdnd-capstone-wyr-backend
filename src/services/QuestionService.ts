@@ -103,7 +103,9 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
 
 /**
  * add-doc
+ * todo implement
+ * this needs to read from the database stream, not the repo itself
  */
-export async function getAllQuestions(): Promise<Question[]> {
-  return await repo.queryAllQuestions()
+export async function getAllQuestions(): Promise<any> {
+  return undefined
 }
