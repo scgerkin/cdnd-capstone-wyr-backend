@@ -33,7 +33,12 @@ export const handler: APIGatewayProxyHandler =
         return invalidUserId()
       }
 
-      const request: CreateQuestionRequest = JSON.parse(event.body)
+      let request: CreateQuestionRequest;
+      try {
+        request = JSON.parse(event.body)
+      } catch (e) {
+        return badRequest("Unable to parse request.", {request: event.body, error: e})
+      }
 
       if (!validCreateRequest(request)) {
         return badRequest("Invalid create request. " +
