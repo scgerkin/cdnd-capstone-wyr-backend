@@ -7,16 +7,16 @@ export function invalidUserId(): APIGatewayProxyResult {
   }
 }
 
-export function createSuccess(payload: any): APIGatewayProxyResult {
+export function requestSuccess(payload: any, statusCode?: number): APIGatewayProxyResult {
   return {
-    statusCode: 201,
+    statusCode: statusCode ? statusCode : 200,
     body: JSON.stringify({item: payload})
   }
 }
 
-export function badRequest(errorMsg: string, request: any): APIGatewayProxyResult {
+export function badRequest(errorMsg: string, request: any, statusCode?: number): APIGatewayProxyResult {
   return {
-    statusCode: 400,
+    statusCode: statusCode ? statusCode : 400,
     body: JSON.stringify({error: errorMsg, request: request})
   }
 }

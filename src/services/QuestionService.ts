@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
-import * as repo from "../repositories/QuestionRepository"
 import {Question} from "../models/Question"
+import * as repo from "../repositories/QuestionRepository"
 import {CreateQuestionRequest} from "../requests/Question"
 import {createLogger} from "../utils/logger"
 
@@ -27,22 +27,57 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
     createdAt: new Date().toISOString(),
     optionOne: {
       text: request.optionOneText,
-      votes: []
+      votes: [],
     },
     optionTwo: {
       text: request.optionTwoText,
-      votes: []
-    }
+      votes: [],
+    },
   }
   logger.info("Created new question.", {question: question})
 
   try {
-    await repo.putNew(question);
+    await repo.putNewQuestion(question);
   } catch (e) {
     logger.error(e)
-    throw e;
+    throw e
   }
 
   return question
 }
 
+/**
+ * add-doc
+ * @param questionId
+ * @param userId
+ */
+export async function deleteQuestion(questionId: string, userId: string): Promise<any> {
+  logger.debug(
+      "deleteQuestion initiated.",
+      {
+        questionId: questionId,
+        userId: userId,
+      })
+
+  let question: Question
+  try {
+    question = await repo.queryByQuestionId(questionId)
+  } catch (e) {
+    logger.error(e)
+    //todo sanitize, also should be a 400 on controller, but below will be 401
+    throw e
+  }
+
+  if (question.authorId !== userId) {
+    throw new Error("Question does not belong to the requesting user.")
+  }
+
+  try {
+    await repo.deleteQuestion(question)
+    return questionId
+  } catch (e) {
+    logger.error(e)
+    // todo handle/sanitize
+    throw e
+  }
+}

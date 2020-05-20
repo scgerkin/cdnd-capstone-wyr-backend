@@ -8,12 +8,18 @@ import {Question} from "../../models/Question"
 import {CreateQuestionRequest} from "../../requests/Question"
 import {addNewQuestion} from "../../services/QuestionService"
 import {createLogger} from "../../utils/logger";
-import {badRequest, createSuccess, internalError} from "../shared"
-import {invalidUserId} from "../shared"
+import {badRequest, requestSuccess, internalError, invalidUserId} from "../shared"
 import {getUserId, initiateLambda} from "../utils"
 
-const logger = createLogger("postNewQuestions")
+const logger = createLogger("addNewQuestion")
 
+/**
+ * Handles POST requests for adding a new Question to the database.
+ * @method POST
+ * @param event The event with body containing a CreateQuestionRequest object.
+ * @param context The current context.
+ * @return APIGatewayProxyResult with the created question.
+ */
 export const handler: APIGatewayProxyHandler =
     async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
       initiateLambda(logger, event, context)
@@ -36,7 +42,7 @@ export const handler: APIGatewayProxyHandler =
 
       try {
         const question: Question = await addNewQuestion(request, userId)
-        return createSuccess(question)
+        return requestSuccess(question, 201)
       } catch (e) {
         return internalError(e)
       }
