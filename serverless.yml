@@ -59,7 +59,7 @@ functions:
           method: delete
           path: question/{questionId}
 
-  GetQuestionById:
+  GetQuestionById:  # nts no auth
     handler: src/controllers/questions/getQuestionById.handler
     iamRoleStatementName: GetQuestionById
     iamRoleStatements:
@@ -72,6 +72,18 @@ functions:
           method: get
           path: question/{questionId}
 
+  GetQuestionsByAuthor:   # nts no auth
+    handler: src/controllers/questions/getQuestionsByAuthor.handler
+    iamRoleStatementName: GetQuestionsByAuthor
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: questions/author/{authorId}
 
 resources:
   Resources:

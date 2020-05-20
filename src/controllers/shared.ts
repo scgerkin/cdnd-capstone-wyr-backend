@@ -7,6 +7,7 @@ export function invalidUserId(): APIGatewayProxyResult {
   }
 }
 
+//consider should probably fix to return a list even if only one item
 export function requestSuccess(payload: any, statusCode?: number): APIGatewayProxyResult {
   return {
     statusCode: statusCode ? statusCode : 200,

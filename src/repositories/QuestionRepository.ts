@@ -13,46 +13,43 @@ export const QUESTION_AUTHOR_ID_INDEX = process.env.QUESTION_AUTHOR_ID_INDEX
 export const QUESTION_CREATED_AT_INDEX = process.env.QUESTION_CREATED_AT_INDEX
 
 export async function putNewQuestion(question: Question): Promise<Question> {
-  logger.debug("putNewQuestion initiated.", {question: question})
+  logStart("putNewQuestion", question)
 
-  const statement = docClient.put({
+  const statement = {
     TableName: QUESTIONS_TABLE,
     Item: question,
-  }).promise()
-  logger.debug("Statement created.")
+  }
+  logStatement(statement)
 
-  await statement;
-  logger.debug("Statement awaited.")
+  const result = await docClient.put(statement).promise()
+  logResult(result)
 
   return question;
 }
 
 export async function queryByQuestionId(questionId: string): Promise<Question> {
-  logger.debug(
-      "queryByQuestionId initiated.",
-      {
-        questionId: questionId,
-      })
+  logStart("queryByQuestionId", questionId)
 
-  const query = docClient.query({
+  const statement = {
     TableName: QUESTIONS_TABLE,
     IndexName: QUESTION_ID_INDEX,
     KeyConditionExpression: `${QUESTION_ID_INDEX} = :questionId`,
     ExpressionAttributeValues: {
       ":questionId": questionId,
     },
-  }).promise()
-  logger.debug("Query created.")
+  }
+  logStatement(statement)
 
-  const result = await query;
-  logger.info("Query result", {result: result})
+  const result = await docClient.query(statement).promise()
+  logResult(result)
 
+  // fixme move into service
   if (!result || result.Items.length <= 0) {
     const msg = JSON.stringify({
       message: "Unable to retrieve question",
       questionId: questionId,
       result: result,
-      query: query
+      statement: statement
     })
     throw new Error(msg)
   }
@@ -61,16 +58,12 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
 }
 
 export async function deleteQuestion(question: Question): Promise<Question> {
-  logger.debug(
-      "deleteQuestion initiated.",
-      {
-        question: question,
-      })
+  logStart("deleteQuestion", question)
 
   const conditionExpression = `${QUESTION_ID_INDEX} = :questionId`
   logger.debug("Condition expression", {conditionExpression: conditionExpression})
 
-  const statement = docClient.delete({
+  const statement = {
     TableName: QUESTIONS_TABLE,
     Key: {
       [QUESTION_AUTHOR_ID_INDEX]: question.authorId,
@@ -80,11 +73,39 @@ export async function deleteQuestion(question: Question): Promise<Question> {
     ExpressionAttributeValues: {
       ":questionId": question.questionId
     }
-  }).promise()
-  logger.debug("Statement created.")
+  }
+  logStatement(statement)
 
-  await statement;
-  logger.debug("Statement awaited.")
+  const result = await docClient.delete(statement).promise()
+  logResult(result)
 
   return question
+}
+
+export async function queryByAuthorId(authorId: string): Promise<Question[]> {
+  logStart("queryByAuthorId", authorId)
+
+  const statement = {
+    TableName: QUESTIONS_TABLE,
+    KeyConditionExpression: `${QUESTION_AUTHOR_ID_INDEX} = :authorId`,
+    ExpressionAttributeValues: { ":authorId": authorId}
+  }
+  logStatement(statement)
+
+  const result = await docClient.query(statement).promise()
+  logResult(result)
+
+  return result.Items as Question[]
+}
+
+function logStart(funcName, args?) {
+  logger.log("debug", `Initiate ${funcName}.`, {args: args})
+}
+
+function logStatement(statement) {
+  logger.log("debug", "Statement created.", {statement: statement})
+}
+
+function logResult(result) {
+  logger.log("info", "Result received.", {result: result})
 }

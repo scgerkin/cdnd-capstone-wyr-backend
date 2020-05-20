@@ -92,3 +92,8 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
     throw e
   }
 }
+
+
+export async function getQuestionsByAuthor(authorId: string): Promise<Question[]> {
+  return await repo.queryByAuthorId(authorId)
+}
