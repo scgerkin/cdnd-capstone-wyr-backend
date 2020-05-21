@@ -69,6 +69,7 @@ async function handleRemove(record): Promise<QuestionDateRecord> {
 function getDateRecord(image): QuestionDateRecord {
   const createdAt = Number(image.createdAt.N)
   return {
+    authorId: image.authorId.S,
     questionId: image.questionId.S,
     createdAt: Number(image.createdAt.N),
     questionCreateDate: getYearMonthDateString(createdAt),

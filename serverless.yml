@@ -30,7 +30,7 @@ provider:
 
     QUESTION_IDS_BY_DATE_TABLE: questions-by-date-${self:service.name}-${self:provider.stage}
     DATE_TABLE_PARTITION_KEY_NAME: questionCreateDate
-    RECENT_QUESTIONS_MAX_LIMIT: 40
+    MAX_QUERY_LIMIT: 40
 
 # todo version API, endpoint should be /api/v0/endpoint
 functions:
@@ -99,11 +99,11 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}/index/${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:BatchGetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/*
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
     events:
       - http:
           method: get

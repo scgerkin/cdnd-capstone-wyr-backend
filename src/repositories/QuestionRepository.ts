@@ -1,3 +1,8 @@
+/**
+ * TODO:
+ *  1. Refactor QuestionDateRecord into it's own repository, this is a little long
+ *  2. Move the log start functions out into project utils. These are really handy.
+ */
 import * as DynamoDB from "aws-sdk/clients/dynamodb"
 import {DocumentClient} from "aws-sdk/clients/dynamodb"
 import QueryOutput = DocumentClient.QueryOutput
@@ -100,6 +105,35 @@ export async function queryByAuthorId(authorId: string): Promise<Question[]> {
 
   return result.Items as Question[]
 }
+
+/**
+ * nts results are not ordered based on request
+ * @param questionIds
+ */
+export async function batchGetQuestions(questionIds: {authorId: string, createdAt: number}[]): Promise<Question[]> {
+  logStart("batchGetQuestions", questionIds)
+
+  const parameters = {
+    RequestItems: {
+      [QUESTIONS_TABLE] : {
+        Keys: questionIds
+      }
+    }
+  }
+  logParameters(parameters)
+
+  const result = await docClient.batchGet(parameters).promise()
+  logResult(result)
+
+  return result.Responses[QUESTIONS_TABLE] as Question[]
+}
+
+/*
+********************************************************************************
+* FIXME Refactor the below out into its own module. Everything below deals exclusively
+*  with date records
+********************************************************************************
+ */
 
 export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
   logStart("putDateRecord", {dateRecord: dateRecord})

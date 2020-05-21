@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-import {DatePartitionKey, Question} from "../models/Question"
+import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
 import * as repo from "../repositories/QuestionRepository"
 import {CreateQuestionRequest} from "../requests/Question"
 import {createLogger} from "../utils/logger"
@@ -103,13 +103,22 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
 
 /**
  * add-doc
- * todo implement
- * return
- * this needs to read from the database stream, not the repo itself
+ *  Note: The results received from the batch is NOT ordered based on the request
+ *  So even though we get a list of IDs to use for batching in descending order,
+ *  the results will not be ordered the same way.
+ * Consider sorting here, although that may not be needed. The front end sorts
+ *  when it displays stuff
  */
-export async function getQuestionsByDate(lastEvaluatedKey?: string, limit: number): Promise<any> {
-  // get list of keys from question date table
-  // that will return ids of questions
-  // then batch get questions from question record table and return that
+export async function getQuestionsByDate(request: DateRecordRequest): Promise<any> {
+  const dateRecords: QuestionDateRecord[] = await repo.getDateRecords(request)
 
+  // consists of createdAt and authorId which is what we need to use as keys
+  // for batch get
+  const questionPartitionKey = dateRecords.map(record => {
+    delete record.questionCreateDate
+    delete record.questionId
+    return record
+  })
+
+  return await repo.batchGetQuestions(questionPartitionKey)
 }

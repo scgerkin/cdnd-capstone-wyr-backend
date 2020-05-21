@@ -25,21 +25,29 @@ export const handler: APIGatewayProxyHandler =
     async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
       initiateLambda(logger, event, context)
 
-      const lastEvaluatedKey = event.pathParameters.lastEvaluatedKey
-          ? event.pathParameters.lastEvaluatedKey
-          : null
+      // const lastEvaluatedKey = event.pathParameters.lastEvaluatedKey
+      //     ? event.pathParameters.lastEvaluatedKey
+      //     : null
+      //
+      // const limit = event.pathParameters.limit < RECENT_QUESTIONS_MAX_LIMIT
+      //   ? event.pathParameters.limit
+      //   : RECENT_QUESTIONS_MAX_LIMIT
+      // logger.debug("Request parameters", {lastEvaluatedKey: lastEvaluatedKey, limit: limit})
 
-      const limit = event.pathParameters.limit < RECENT_QUESTIONS_MAX_LIMIT
-        ? event.pathParameters.limit
-        : RECENT_QUESTIONS_MAX_LIMIT
-      logger.debug("Request parameters", {lastEvaluatedKey: lastEvaluatedKey, limit: limit})
+      // try {
+      //   const questions = await getQuestionsByDate(lastEvaluatedKey, limit)
+      //   return requestSuccess(questions)
+      // } catch (e) {
+      //   logger.error(e)
+      //   return internalError(e)
+      // }
 
       try {
-        const questions = await getQuestionsByDate(lastEvaluatedKey, limit)
-        return requestSuccess(questions)
+        const dateRecords = await getQuestionsByDate({yearMonthDay: "2020-05-21", limit: 5})
+        return requestSuccess(dateRecords)
       } catch (e) {
-        logger.error(e)
         return internalError(e)
       }
+
 
     }
