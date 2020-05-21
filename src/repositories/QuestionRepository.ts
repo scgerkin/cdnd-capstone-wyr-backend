@@ -179,7 +179,7 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
     TableName: QUESTION_IDS_BY_DATE_TABLE,
     Limit: request.limit < MAX_QUERY_LIMIT ? request.limit : MAX_QUERY_LIMIT,
     KeyConditionExpression: "questionCreateDate = :questionCreateDate",
-    ExpressionAttributeValues: { ":questionCreateDate": request.yearMonthDay},
+    ExpressionAttributeValues: { ":questionCreateDate": request.questionCreateDate},
     ExclusiveStartKey: request.lastEvaluatedKey ? request.lastEvaluatedKey : null,
     ScanIndexForward: false
   }
@@ -195,6 +195,7 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
     logger.debug("LastEvaluatedKey", {LastEvaluatedKey: result.LastEvaluatedKey})
     parameters = {
       ...parameters,
+      // @ts-ignore
       ExclusiveStartKey: result.LastEvaluatedKey
     }
     logParameters(parameters)

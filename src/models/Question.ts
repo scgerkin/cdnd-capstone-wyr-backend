@@ -26,12 +26,12 @@ export interface QuestionDateRecord {
 }
 
 export interface DatePartitionKey {
-  yearMonthDay: string,
+  questionCreateDate: string,
   createdAt:    number
 }
 
 export interface DateRecordRequest {
-  yearMonthDay: string,
+  questionCreateDate: string,
   limit?: number,
-  lastEvaluatedKey?
+  lastEvaluatedKey?: DatePartitionKey
 }

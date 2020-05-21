@@ -108,6 +108,7 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
  *  the results will not be ordered the same way.
  * Consider sorting here, although that may not be needed. The front end sorts
  *  when it displays stuff
+ *  FIXME This needs to increment by 1 day if not enough results found
  */
 export async function getQuestionsByDate(request: DateRecordRequest): Promise<any> {
   const dateRecords: QuestionDateRecord[] = await repo.getDateRecords(request)
