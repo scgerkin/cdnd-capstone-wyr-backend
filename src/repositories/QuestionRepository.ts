@@ -135,7 +135,7 @@ export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<
       questionCreateDate: dateRecord.questionCreateDate,
       createdAt: dateRecord.createdAt
     },
-    ConditionExpression: `${QUESTION_ID_INDEX} = :questionId`,
+    ConditionExpression: `questionId = :questionId`,
     ExpressionAttributeValues: {
       ":questionId": dateRecord.questionId
     }

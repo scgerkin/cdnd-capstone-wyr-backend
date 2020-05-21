@@ -1,6 +1,6 @@
 import {Context, DynamoDBStreamEvent, DynamoDBStreamHandler} from "aws-lambda";
-import {Question, QuestionDateRecord} from "../../models/Question"
-import {putDateRecord} from "../../repositories/QuestionRepository"
+import {QuestionDateRecord} from "../../models/Question"
+import {deleteDateRecord, putDateRecord} from "../../repositories/QuestionRepository"
 import {createLogger} from "../../utils/logger";
 import {getYearMonthDateString, initiateLambda} from "../utils"
 
@@ -19,7 +19,7 @@ export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent,
     try {
       await handleRecord(record)
     } catch (e) {
-      logger.error(e)
+      logger.error("Error handling record.", {error: e, record: record})
     }
   }
 }
@@ -28,13 +28,19 @@ async function handleRecord(record): Promise<any> {
   switch(record.eventName) {
     case INSERT: return await handleInsert(record)
     case MODIFY: return await handleModify(record)
-    case REMOVE: return await handleRecord(record)
+    case REMOVE: return await handleRemove(record)
     default: return null
   }
 }
 
 async function handleInsert(record): Promise<QuestionDateRecord> {
-  const dateRecord = getDateRecord(record)
+  const image = record.dynamodb.NewImage
+  if (!image) {
+    throw new Error("No image present on record.")
+  }
+  logger.debug("Image", {image: image})
+
+  const dateRecord = getDateRecord(image)
   await putDateRecord(dateRecord)
   logger.info("New date record persisted.", {dateRecord: dateRecord})
   return dateRecord
@@ -42,25 +48,29 @@ async function handleInsert(record): Promise<QuestionDateRecord> {
 
 //todo reserved for future use
 async function handleModify(record): Promise<any> {
+  logger.info("Handle modify called.", {record: record})
   return "Not implemented."
 }
 
 async function handleRemove(record): Promise<QuestionDateRecord> {
-  const dateRecord = getDateRecord(record)
+  const image = record.dynamodb.OldImage
+  if (!image) {
+    throw new Error("No image present on record.")
+  }
+  logger.debug("Image", {image: image})
+
+  const dateRecord = getDateRecord(image)
   await deleteDateRecord(dateRecord)
   logger.info("Date record removed.", {dateRecord: dateRecord})
+
   return dateRecord
 }
 
-function getDateRecord(record): QuestionDateRecord {
-  const image = record.dynamodb.NewImage
-  logger.debug("Image", {image: image})
-
+function getDateRecord(image): QuestionDateRecord {
   const createdAt = Number(image.createdAt.N)
-
   return {
     questionId: image.questionId.S,
-    createdAt: createdAt,
+    createdAt: Number(image.createdAt.N),
     questionCreateDate: getYearMonthDateString(createdAt),
   }
 }
