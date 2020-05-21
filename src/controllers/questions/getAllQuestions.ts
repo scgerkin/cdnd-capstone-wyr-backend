@@ -15,9 +15,7 @@ const logger = createLogger("getAllQuestions")
 const DATE_REGEX = new RegExp("^(19|20)\\d{2}[\\-](0[1-9]|1[0-2])[\\-](0[1-9]|[12]\\d|3[01])$")
 
 /**
- * nts this needs to take a date range, pagination params, and limit from path query params
- *  if none, use defaults of now, no last key index, limit ?40
- *  Can return empty list if nothing found with those params
+ * todo need to return last evaluated key if present
  * @param event
  * @param context
  */
@@ -66,7 +64,7 @@ function parseQueryStringParams(parameters): DateRecordRequest {
 }
 
 function setQuestionCreateDate(parameters): string {
-  if (!parameters.yearMonthDay) {
+  if (!parameters.date) {
     return getYearMonthDateString(Date.now())
   } else if (validDateString(parameters.yearMonthDay)) {
     return parameters.yearMonthDay

@@ -208,6 +208,21 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
   return questionDateRecords
 }
 
+export async function getDateRecordCount(): Promise<number> {
+  logStart("getDateRecordCount")
+
+  const parameters = {
+    TableName: QUESTION_IDS_BY_DATE_TABLE
+  }
+  logParameters(parameters)
+
+  const db = new DynamoDB
+  const result = await db.describeTable(parameters).promise()
+  logResult(result)
+
+  return result.Table.ItemCount
+}
+
 function logStart(funcName, args?) {
   logger.log("info", `Initiate ${funcName}.`, {args: args})
 }
