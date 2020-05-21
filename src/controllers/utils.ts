@@ -17,3 +17,7 @@ export function getUserId(event: APIGatewayProxyEvent) {
   console.log(event)
   return "fakeUser"
 }
+
+export function getYearMonthDateString(unixTimestamp: number): string {
+  return new Date(unixTimestamp).toISOString().split("T")[0]
+}

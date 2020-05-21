@@ -125,3 +125,25 @@ function logStatement(statement) {
 function logResult(result) {
   logger.log("info", "Result received.", {result: result})
 }
+
+export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
+  logStart("deleteDateRecord", {dateRecord: dateRecord})
+
+  const statement = {
+    TableName: QUESTION_IDS_BY_DATE_TABLE,
+    Key: {
+      questionCreateDate: dateRecord.questionCreateDate,
+      createdAt: dateRecord.createdAt
+    },
+    ConditionExpression: `${QUESTION_ID_INDEX} = :questionId`,
+    ExpressionAttributeValues: {
+      ":questionId": dateRecord.questionId
+    }
+  }
+  logStatement(statement)
+
+  const result = await docClient.delete(statement).promise()
+  logResult(result)
+
+  return dateRecord
+}

@@ -91,6 +91,7 @@ functions:
           path: questions/author/{authorId}
 
   # fixme: rename this and all called functions
+  # nts this is paginated, returns most recent if no path params
   GetAllQuestions:    # nts no auth
     handler: src/controllers/questions/getAllQuestions.handler
     iamRoleStatementsName: GetAllQuestions
@@ -98,7 +99,11 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}/index/${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+      - Effect: Allow
+        Action:
+          - dynamodb:BatchGetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/*
     events:
       - http:
           method: get
@@ -111,6 +116,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
+          - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
     events:
       - stream:

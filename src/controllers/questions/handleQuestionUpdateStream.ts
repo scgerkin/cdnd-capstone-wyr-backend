@@ -1,8 +1,8 @@
 import {Context, DynamoDBStreamEvent, DynamoDBStreamHandler} from "aws-lambda";
-import {QuestionDateRecord} from "../../models/Question"
+import {Question, QuestionDateRecord} from "../../models/Question"
 import {putDateRecord} from "../../repositories/QuestionRepository"
 import {createLogger} from "../../utils/logger";
-import {initiateLambda} from "../utils"
+import {getYearMonthDateString, initiateLambda} from "../utils"
 
 const logger = createLogger("handleQuestionUpdateStream")
 export const QUESTION_IDS_BY_DATE_TABLE = process.env.QUESTION_IDS_BY_DATE_TABLE
@@ -27,24 +27,40 @@ export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent,
 async function handleRecord(record): Promise<any> {
   switch(record.eventName) {
     case INSERT: return await handleInsert(record)
-    case MODIFY: return null // no action required
-    case REMOVE: return null // todo remove record
+    case MODIFY: return await handleModify(record)
+    case REMOVE: return await handleRecord(record)
     default: return null
   }
 }
 
 async function handleInsert(record): Promise<QuestionDateRecord> {
+  const dateRecord = getDateRecord(record)
+  await putDateRecord(dateRecord)
+  logger.info("New date record persisted.", {dateRecord: dateRecord})
+  return dateRecord
+}
+
+//todo reserved for future use
+async function handleModify(record): Promise<any> {
+  return "Not implemented."
+}
+
+async function handleRemove(record): Promise<QuestionDateRecord> {
+  const dateRecord = getDateRecord(record)
+  await deleteDateRecord(dateRecord)
+  logger.info("Date record removed.", {dateRecord: dateRecord})
+  return dateRecord
+}
+
+function getDateRecord(record): QuestionDateRecord {
   const image = record.dynamodb.NewImage
   logger.debug("Image", {image: image})
 
   const createdAt = Number(image.createdAt.N)
 
-  const dateRecord: QuestionDateRecord = {
+  return {
     questionId: image.questionId.S,
     createdAt: createdAt,
-    questionCreateDate: new Date(createdAt).toISOString().split("T")[0],
+    questionCreateDate: getYearMonthDateString(createdAt),
   }
-  await putDateRecord(dateRecord)
-  logger.info("New date record persisted.", {dateRecord: dateRecord})
-  return dateRecord
 }

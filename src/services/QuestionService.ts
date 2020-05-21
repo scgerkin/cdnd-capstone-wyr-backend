@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-import {Question} from "../models/Question"
+import {DatePartitionKey, Question} from "../models/Question"
 import * as repo from "../repositories/QuestionRepository"
 import {CreateQuestionRequest} from "../requests/Question"
 import {createLogger} from "../utils/logger"
@@ -104,8 +104,12 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
 /**
  * add-doc
  * todo implement
+ * return
  * this needs to read from the database stream, not the repo itself
  */
-export async function getAllQuestions(): Promise<any> {
-  return undefined
+export async function getQuestionsByDate(lastEvaluatedKey?: string, limit: number): Promise<any> {
+  // get list of keys from question date table
+  // that will return ids of questions
+  // then batch get questions from question record table and return that
+
 }
