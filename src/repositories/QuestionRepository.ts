@@ -18,13 +18,13 @@ export const MAX_QUERY_LIMIT = Number(process.env.MAX_QUERY_LIMIT)
 export async function putNewQuestion(question: Question): Promise<Question> {
   logStart("putNewQuestion", question)
 
-  const statement = {
+  const parameters = {
     TableName: QUESTIONS_TABLE,
     Item: question,
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.put(statement).promise()
+  const result = await docClient.put(parameters).promise()
   logResult(result)
 
   return question;
@@ -33,7 +33,7 @@ export async function putNewQuestion(question: Question): Promise<Question> {
 export async function queryByQuestionId(questionId: string): Promise<Question> {
   logStart("queryByQuestionId", questionId)
 
-  const statement = {
+  const parameters = {
     TableName: QUESTIONS_TABLE,
     IndexName: QUESTION_ID_INDEX,
     KeyConditionExpression: `${QUESTION_ID_INDEX} = :questionId`,
@@ -41,9 +41,9 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
       ":questionId": questionId,
     },
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.query(statement).promise()
+  const result = await docClient.query(parameters).promise()
   logResult(result)
 
   // fixme move into service
@@ -52,7 +52,7 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
       message: "Unable to retrieve question",
       questionId: questionId,
       result: result,
-      statement: statement
+      parameters: parameters
     })
     throw new Error(msg)
   }
@@ -66,7 +66,7 @@ export async function deleteQuestion(question: Question): Promise<Question> {
   const conditionExpression = `${QUESTION_ID_INDEX} = :questionId`
   logger.debug("Condition expression", {conditionExpression: conditionExpression})
 
-  const statement = {
+  const parameters = {
     TableName: QUESTIONS_TABLE,
     Key: {
       [QUESTION_AUTHOR_ID_INDEX]: question.authorId,
@@ -77,9 +77,9 @@ export async function deleteQuestion(question: Question): Promise<Question> {
       ":questionId": question.questionId
     }
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.delete(statement).promise()
+  const result = await docClient.delete(parameters).promise()
   logResult(result)
 
   return question
@@ -88,14 +88,14 @@ export async function deleteQuestion(question: Question): Promise<Question> {
 export async function queryByAuthorId(authorId: string): Promise<Question[]> {
   logStart("queryByAuthorId", authorId)
 
-  const statement = {
+  const parameters = {
     TableName: QUESTIONS_TABLE,
     KeyConditionExpression: `${QUESTION_AUTHOR_ID_INDEX} = :authorId`,
     ExpressionAttributeValues: { ":authorId": authorId}
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.query(statement).promise()
+  const result = await docClient.query(parameters).promise()
   logResult(result)
 
   return result.Items as Question[]
@@ -104,34 +104,22 @@ export async function queryByAuthorId(authorId: string): Promise<Question[]> {
 export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
   logStart("putDateRecord", {dateRecord: dateRecord})
 
-  const statement = {
+  const parameters = {
     TableName: QUESTION_IDS_BY_DATE_TABLE,
     Item: dateRecord
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.put(statement).promise()
+  const result = await docClient.put(parameters).promise()
   logResult(result)
 
   return dateRecord
 }
 
-function logStart(funcName, args?) {
-  logger.log("debug", `Initiate ${funcName}.`, {args: args})
-}
-
-function logStatement(statement) {
-  logger.log("debug", "Statement created.", {statement: statement})
-}
-
-function logResult(result) {
-  logger.log("info", "Result received.", {result: result})
-}
-
 export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
   logStart("deleteDateRecord", {dateRecord: dateRecord})
 
-  const statement = {
+  const parameters = {
     TableName: QUESTION_IDS_BY_DATE_TABLE,
     Key: {
       questionCreateDate: dateRecord.questionCreateDate,
@@ -142,9 +130,9 @@ export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<
       ":questionId": dateRecord.questionId
     }
   }
-  logStatement(statement)
+  logParameters(parameters)
 
-  const result = await docClient.delete(statement).promise()
+  const result = await docClient.delete(parameters).promise()
   logResult(result)
 
   return dateRecord
@@ -160,7 +148,7 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
     ExpressionAttributeValues: { ":questionCreateDate": request.yearMonthDay},
     ExclusiveStartKey: request.lastEvaluatedKey ? request.lastEvaluatedKey : null
   }
-  logStatement(parameters)
+  logParameters(parameters)
 
   let result: QueryOutput = await docClient.query(parameters).promise()
   logResult(result)
@@ -174,7 +162,7 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
       ...parameters,
       ExclusiveStartKey: result.LastEvaluatedKey
     }
-    logStatement(parameters)
+    logParameters(parameters)
     result = await docClient.query(parameters).promise()
     logResult(result)
     questionDateRecords = questionDateRecords.concat(result.Items as QuestionDateRecord[])
@@ -182,4 +170,16 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
   }
 
   return questionDateRecords
+}
+
+function logStart(funcName, args?) {
+  logger.log("info", `Initiate ${funcName}.`, {args: args})
+}
+
+function logParameters(parameters) {
+  logger.log("info", "Parameters created.", {parameters: parameters})
+}
+
+function logResult(result) {
+  logger.log("info", "Result received.", {result: result})
 }
