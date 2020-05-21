@@ -146,7 +146,8 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
     Limit: request.limit < MAX_QUERY_LIMIT ? request.limit : MAX_QUERY_LIMIT,
     KeyConditionExpression: "questionCreateDate = :questionCreateDate",
     ExpressionAttributeValues: { ":questionCreateDate": request.yearMonthDay},
-    ExclusiveStartKey: request.lastEvaluatedKey ? request.lastEvaluatedKey : null
+    ExclusiveStartKey: request.lastEvaluatedKey ? request.lastEvaluatedKey : null,
+    ScanIndexForward: false
   }
   logParameters(parameters)
 
