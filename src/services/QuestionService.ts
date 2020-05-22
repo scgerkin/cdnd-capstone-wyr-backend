@@ -3,7 +3,7 @@ import {getYearMonthDateString} from "../controllers/utils"
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
 import {getDateRecordCount} from "../repositories/QuestionRepository"
 import * as repo from "../repositories/QuestionRepository"
-import {CreateQuestionRequest} from "../requests/Question"
+import {CastVoteRequest, CreateQuestionRequest} from "../requests/Question"
 import {createLogger} from "../utils/logger"
 
 const logger = createLogger("QuestionService");
@@ -39,7 +39,7 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
   logger.info("Created new question.", {question: question})
 
   try {
-    await repo.putNewQuestion(question);
+    await repo.putQuestion(question);
   } catch (e) {
     logger.error(e.message)
     throw e
@@ -153,6 +153,35 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
   })
 
   return await repo.batchGetQuestions(questionPartitionKey)
+}
+
+export async function addVoteToQuestion(request: CastVoteRequest): Promise<Question> {
+  let question = await getQuestionById(request.questionId)
+
+  if (question.optionOne.text.toLowerCase().trim() === request.optionText.toLowerCase().trim()) {
+    question = {
+      ...question,
+      optionOne: {
+        ...question.optionOne,
+        votes: question.optionOne.votes.concat([request.userId])
+      }
+    }
+  } else if (question.optionTwo.text.toLowerCase().trim() === request.optionText.toLowerCase().trim()) {
+    question = {
+      ...question,
+      optionTwo: {
+        ...question.optionTwo,
+        votes: question.optionTwo.votes.concat([request.userId])
+      }
+    }
+  } else {
+    throw new Error("The option text was not matched to an existing option.\n" +
+        `Expected: '${question.optionOne.text}' or ${question.optionTwo.text}\n`+
+        `Received: '${request.optionText}`
+    )
+  }
+
+  return await repo.putQuestion(question)
 }
 
 /**

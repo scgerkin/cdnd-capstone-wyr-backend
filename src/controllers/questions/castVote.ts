@@ -4,11 +4,12 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda"
-import {Question} from "../../models/Question"
+import {CastVoteRequest} from "../../requests/Question"
+import {addVoteToQuestion} from "../../services/QuestionService"
 
 import {createLogger} from "../../utils/logger"
-import {badRequest} from "../shared"
-import {initiateLambda} from "../utils"
+import {badRequest, invalidUserId, requestSuccess} from "../shared"
+import {getUserId, initiateLambda} from "../utils"
 
 const logger = createLogger("updateQuestion")
 
@@ -21,12 +22,39 @@ export const handler: APIGatewayProxyHandler =
     async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
       initiateLambda(logger, event, context)
 
-      let question: Question
+      let userId: string;
       try {
-        question = JSON.parse(event.body)
+        userId = getUserId(event)
+        logger.log("info", "Retrieved userId", {userId: userId})
       } catch (e) {
-        return badRequest("Unable to parse request.",
-            {request: event.body, error: e.message})
+        logger.error(e.message)
+        return invalidUserId()
       }
 
+      let castVoteRequest: CastVoteRequest
+      try {
+        castVoteRequest = JSON.parse(event.body)
+      } catch (e) {
+        logger.error(e.message)
+        return badRequest("Unable to parse request.", {error: e.message, request: event.body})
+      }
+
+      if (!castVoteRequest.questionId) {
+        return badRequest("Question ID is required.", {pathParameters: event.pathParameters})
+      }
+      if (!castVoteRequest.optionText) {
+        return badRequest("Option text is required.", {request: castVoteRequest})
+      }
+      castVoteRequest = {
+        ...castVoteRequest,
+        userId: userId
+      }
+
+      try {
+        const updatedQuestion = await addVoteToQuestion(castVoteRequest)
+        return requestSuccess(updatedQuestion)
+      } catch (e) {
+        return badRequest("Unable to update record.",
+            {request: castVoteRequest, error: e.message})
+      }
     }

@@ -75,7 +75,7 @@ functions:
     events:
       - http:
           method: get
-          path: question/{questionId}
+          path: questions/{questionId}
 
   GetQuestionsByAuthor:   # nts no auth
     handler: src/controllers/questions/getQuestionsByAuthor.handler
@@ -123,6 +123,23 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt QuestionsDynamoDBTable.StreamArn
+
+  CastVote:
+    handler: src/controllers/questions/castVote.handler
+    iamRoleStatementsName: CastVote
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: put
+          path: questions
 
 resources:
   Resources:

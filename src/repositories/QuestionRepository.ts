@@ -24,8 +24,8 @@ export const MAX_QUERY_LIMIT = Number(process.env.MAX_QUERY_LIMIT)
  * add-doc
  * @param question
  */
-export async function putNewQuestion(question: Question): Promise<Question> {
-  logStart("putNewQuestion", question)
+export async function putQuestion(question: Question): Promise<Question> {
+  logStart("putQuestion", question)
 
   const parameters = {
     TableName: QUESTIONS_TABLE,
