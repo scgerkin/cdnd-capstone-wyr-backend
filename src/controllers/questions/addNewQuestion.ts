@@ -29,7 +29,7 @@ export const handler: APIGatewayProxyHandler =
         userId = getUserId(event)
         logger.log("info", "Retrieved userId", {userId: userId})
       } catch (e) {
-        logger.error(e)
+        logger.error(e.message)
         return invalidUserId()
       }
 
@@ -37,7 +37,7 @@ export const handler: APIGatewayProxyHandler =
       try {
         request = JSON.parse(event.body)
       } catch (e) {
-        return badRequest("Unable to parse request.", {request: event.body, error: e})
+        return badRequest("Unable to parse request.", {request: event.body, error: e.message})
       }
 
       if (!validCreateRequest(request)) {
@@ -49,7 +49,7 @@ export const handler: APIGatewayProxyHandler =
         const question: Question = await addNewQuestion(request, userId)
         return requestSuccess(question, 201)
       } catch (e) {
-        return internalError(e)
+        return internalError(e.message)
       }
     }
 
