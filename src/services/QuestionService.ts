@@ -158,6 +158,24 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
 export async function addVoteToQuestion(request: CastVoteRequest): Promise<Question> {
   let question = await getQuestionById(request.questionId)
 
+  if (question.optionOne.votes.includes(request.userId)) {
+    question = {
+      ...question,
+      optionOne: {
+        ...question.optionOne,
+        votes: question.optionOne.votes.filter(vote => vote !== request.userId)
+      }
+    }
+  } else if (question.optionTwo.votes.includes(request.userId)) {
+    question = {
+      ...question,
+      optionTwo: {
+        ...question.optionTwo,
+        votes: question.optionTwo.votes.filter(vote => vote !== request.userId)
+      }
+    }
+  }
+
   if (question.optionOne.text.toLowerCase().trim() === request.optionText.toLowerCase().trim()) {
     question = {
       ...question,
@@ -175,9 +193,10 @@ export async function addVoteToQuestion(request: CastVoteRequest): Promise<Quest
       }
     }
   } else {
-    throw new Error("The option text was not matched to an existing option.\n" +
-        `Expected: '${question.optionOne.text}' or ${question.optionTwo.text}\n`+
-        `Received: '${request.optionText}`
+    throw new Error("The option text was not matched to an existing option.\n"
+        + `Expected: '${question.optionOne.text}' or ${question.optionTwo.text}\n`
+        + `Received: '${request.optionText}\n`
+        + "No change has been made."
     )
   }
 
