@@ -15,6 +15,12 @@ const logger = createLogger("updateQuestion")
 
 /**
  * add-doc
+ * FIXME To be consistent with how User information is stored, this should receive
+ *  'optionOne' or 'optionTwo' instead of the option text. This will also allow for
+ *  changing the interface without changing the data to support editing options if
+ *  desired. It's unlikely that we would allow someone to change the options for
+ *  a question without completely nullifying the results, but having the option
+ *  to change things easier in the future is better overall.
  * @param event
  * @param context
  */
