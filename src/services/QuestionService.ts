@@ -155,6 +155,13 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
   return await repo.batchGetQuestions(questionPartitionKey)
 }
 
+/**
+ * add-doc
+ * fixme need to change what is being parsed as a vote
+ *  To be consistent with how user information is stored, should receive 'optionOne'
+ *  or 'optionTwo', not the actual text. Might be easier to handle as well
+ * @param request
+ */
 export async function addVoteToQuestion(request: CastVoteRequest): Promise<Question> {
   let question = await getQuestionById(request.questionId)
 
