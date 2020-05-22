@@ -193,11 +193,14 @@ export async function addVoteToQuestion(request: CastVoteRequest): Promise<Quest
       }
     }
   } else {
-    throw new Error("The option text was not matched to an existing option.\n"
-        + `Expected: '${question.optionOne.text}' or ${question.optionTwo.text}\n`
-        + `Received: '${request.optionText}\n`
-        + "No change has been made."
-    )
+    throw new Error(JSON.stringify({
+      message: "The option text was not matched to an existing option.",
+      expected: {
+        optionOneText: question.optionOne.text,
+        optionTwoText: question.optionTwo.text
+      },
+      received: request.optionText
+    }))
   }
 
   return await repo.putQuestion(question)

@@ -55,6 +55,6 @@ export const handler: APIGatewayProxyHandler =
         return requestSuccess(updatedQuestion)
       } catch (e) {
         return badRequest("Unable to update record.",
-            {request: castVoteRequest, error: e.message})
+            {request: castVoteRequest, message: JSON.parse(e.message)})
       }
     }

@@ -6,8 +6,8 @@ export const initiateLambda = (logger: Logger, event: APIGatewayProxyEvent | Dyn
       "info",
       "Begin Lambda",
       {
-        event: JSON.stringify(event),
-        context: JSON.stringify(context)
+        event: event,
+        context: context
       })
 }
 
