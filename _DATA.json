@@ -1,0 +1,97 @@
+[
+  {
+    "questionId": "8xf0y6ziyjabvozdd253nd",
+    "authorId": "sarahedo",
+    "createdAt": 1589905794000,
+    "optionOne": {
+      "votes": [
+        "sarahedo"
+      ],
+      "text": "have horrible short term memory"
+    },
+    "optionTwo": {
+      "votes": [],
+      "text": "have horrible long term memory"
+    }
+  },
+  {
+    "questionId": "6ni6ok3ym7mf1p33lnez",
+    "authorId": "johndoe",
+    "createdAt": 1589927394000,
+    "optionOne": {
+      "votes": [],
+      "text": "become a superhero"
+    },
+    "optionTwo": {
+      "votes": [
+        "johndoe",
+        "sarahedo"
+      ],
+      "text": "become a supervillain"
+    }
+  },
+  {
+    "questionId": "loxhs1bqm25b708cmbf3g",
+    "authorId": "tylermcginnis",
+    "createdAt": 1589948994000,
+    "optionOne": {
+      "votes": [],
+      "text": "be a front-end developer"
+    },
+    "optionTwo": {
+      "votes": [
+        "sarahedo"
+      ],
+      "text": "be a back-end developer"
+    }
+  },
+  {
+    "questionId": "am8ehyc8byjqgar0jgpub9",
+    "authorId": "sarahedo",
+    "createdAt": 1589970594000,
+    "optionOne": {
+      "votes": [],
+      "text": "be telekinetic"
+    },
+    "optionTwo": {
+      "votes": [
+        "sarahedo"
+      ],
+      "text": "be telepathic"
+    }
+  },
+  {
+    "questionId": "vthrdm985a262al8qx3do",
+    "authorId": "tylermcginnis",
+    "createdAt": 1589992194000,
+    "optionOne": {
+      "votes": [
+        "tylermcginnis"
+      ],
+      "text": "find $50 yourself"
+    },
+    "optionTwo": {
+      "votes": [
+        "johndoe"
+      ],
+      "text": "have your best friend find $500"
+    }
+  },
+  {
+    "questionId": "xj352vofupe1dqz9emx13r",
+    "authorId": "johndoe",
+    "createdAt": 1590013794000,
+    "optionOne": {
+      "votes": [
+        "johndoe"
+      ],
+      "text": "write JavaScript"
+    },
+    "optionTwo": {
+      "votes": [
+        "tylermcginnis"
+      ],
+      "text": "set your face on fire"
+    }
+  }
+]

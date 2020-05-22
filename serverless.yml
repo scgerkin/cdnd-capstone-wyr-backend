@@ -23,12 +23,165 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     LOG_LEVEL: debug
 
+    QUESTIONS_TABLE: questions-${self:service.name}-${self:provider.stage}
+    QUESTION_ID_INDEX: questionId
+    QUESTION_AUTHOR_ID_INDEX: authorId
+    QUESTION_CREATED_AT_INDEX: createdAt
+
+    QUESTION_IDS_BY_DATE_TABLE: questions-by-date-${self:service.name}-${self:provider.stage}
+    DATE_TABLE_PARTITION_KEY_NAME: questionCreateDate
+    MAX_QUERY_LIMIT: 40
+
+# todo version API, endpoint should be /api/v0/endpoint
 functions:
-  hello:
-    handler: handler.hello
+  AddNewQuestion:
+    handler: src/controllers/questions/addNewQuestion.handler
+    iamRoleStatementsName: AddNewQuestion
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: post
+          path: questions
+
+  DeleteQuestion:
+    handler: src/controllers/questions/deleteQuestion.handler
+    iamRoleStatementsName: DeleteQuestion
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: delete
+          path: questions/{questionId}
+
+  GetQuestionById:  # nts no auth
+    handler: src/controllers/questions/getQuestionById.handler
+    iamRoleStatementsName: GetQuestionById
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_ID_INDEX}
     events:
       - http:
           method: get
-          path: hello
+          path: questions/{questionId}
 
-#resources:
+  GetQuestionsByAuthor:   # nts no auth
+    handler: src/controllers/questions/getQuestionsByAuthor.handler
+    iamRoleStatementsName: GetQuestionsByAuthor
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: questions/author/{authorId}
+
+  # fixme: rename this and all called functions
+  # nts this is paginated, returns most recent if no path params
+  GetAllQuestions:    # nts no auth
+    handler: src/controllers/questions/getAllQuestions.handler
+    iamRoleStatementsName: GetAllQuestions
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:DescribeTable
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:BatchGetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: questions
+
+  HandleQuestionUpdateStream:
+    handler: src/controllers/questions/handleQuestionUpdateStream.handler
+    iamRoleStatementsName: HandleQuestionUpdateStream
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt QuestionsDynamoDBTable.StreamArn
+
+  CastVote:
+    handler: src/controllers/questions/castVote.handler
+    iamRoleStatementsName: CastVote
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}/index/${self:provider.environment.QUESTION_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTIONS_TABLE}
+    events:
+      - http:
+          method: put
+          path: questions
+
+resources:
+  Resources:
+    QuestionsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QUESTIONS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        AttributeDefinitions:
+          - AttributeName: ${self:provider.environment.QUESTION_ID_INDEX}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ${self:provider.environment.QUESTION_AUTHOR_ID_INDEX}
+            KeyType: HASH
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.QUESTION_ID_INDEX}
+            KeySchema:
+              - AttributeName: ${self:provider.environment.QUESTION_ID_INDEX}
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    QuestionsDateDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: ${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+            AttributeType: S
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ${self:provider.environment.DATE_TABLE_PARTITION_KEY_NAME}
+            KeyType: HASH
+          - AttributeName: ${self:provider.environment.QUESTION_CREATED_AT_INDEX}
+            KeyType: RANGE
