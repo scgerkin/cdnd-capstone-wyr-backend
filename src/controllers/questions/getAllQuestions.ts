@@ -15,7 +15,11 @@ const logger = createLogger("getAllQuestions")
 const DATE_REGEX = new RegExp("^(19|20)\\d{2}[\\-](0[1-9]|1[0-2])[\\-](0[1-9]|[12]\\d|3[01])$")
 
 /**
+ * add-doc
  * todo need to return last evaluated key if present
+ * todo bounce requests before oldest date
+ *  It should be bounced by the service, however that will still make an unnecessary
+ *  query that can be avoided by validating before calling it
  * @param event
  * @param context
  */
@@ -36,8 +40,8 @@ export const handler: APIGatewayProxyHandler =
 
 
       try {
-        const dateRecords = await getQuestionsByDate(request)
-        return requestSuccess(dateRecords)
+        const questions = await getQuestionsByDate(request)
+        return requestSuccess(questions)
       } catch (e) {
         return internalError(e)
       }

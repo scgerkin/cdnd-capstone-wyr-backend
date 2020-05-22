@@ -20,6 +20,10 @@ export const QUESTION_CREATED_AT_INDEX = process.env.QUESTION_CREATED_AT_INDEX
 export const QUESTION_IDS_BY_DATE_TABLE = process.env.QUESTION_IDS_BY_DATE_TABLE
 export const MAX_QUERY_LIMIT = Number(process.env.MAX_QUERY_LIMIT)
 
+/**
+ * add-doc
+ * @param question
+ */
 export async function putNewQuestion(question: Question): Promise<Question> {
   logStart("putNewQuestion", question)
 
@@ -35,6 +39,10 @@ export async function putNewQuestion(question: Question): Promise<Question> {
   return question;
 }
 
+/**
+ * add-doc
+ * @param questionId
+ */
 export async function queryByQuestionId(questionId: string): Promise<Question> {
   logStart("queryByQuestionId", questionId)
 
@@ -65,6 +73,10 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
   return result.Items[0] as Question
 }
 
+/**
+ * add-doc
+ * @param question
+ */
 export async function deleteQuestion(question: Question): Promise<Question> {
   logStart("deleteQuestion", question)
 
@@ -90,6 +102,10 @@ export async function deleteQuestion(question: Question): Promise<Question> {
   return question
 }
 
+/**
+ * add-doc
+ * @param authorId
+ */
 export async function queryByAuthorId(authorId: string): Promise<Question[]> {
   logStart("queryByAuthorId", authorId)
 
@@ -107,6 +123,7 @@ export async function queryByAuthorId(authorId: string): Promise<Question[]> {
 }
 
 /**
+ * add-doc
  * nts results are not ordered based on request
  * @param questionIds
  */
@@ -135,6 +152,10 @@ export async function batchGetQuestions(questionIds: {authorId: string, createdA
 ********************************************************************************
  */
 
+/**
+ * add-doc
+ * @param dateRecord
+ */
 export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
   logStart("putDateRecord", {dateRecord: dateRecord})
 
@@ -150,6 +171,10 @@ export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<Que
   return dateRecord
 }
 
+/**
+ * add-doc
+ * @param dateRecord
+ */
 export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
   logStart("deleteDateRecord", {dateRecord: dateRecord})
 
@@ -172,6 +197,10 @@ export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<
   return dateRecord
 }
 
+/**
+ * add-doc
+ * @param request
+ */
 export async function getDateRecords(request: DateRecordRequest): Promise<QuestionDateRecord[]> {
   logStart("getDateRecords", {request: request})
 
@@ -208,6 +237,9 @@ export async function getDateRecords(request: DateRecordRequest): Promise<Questi
   return questionDateRecords
 }
 
+/**
+ * add-doc
+ */
 export async function getDateRecordCount(): Promise<number> {
   logStart("getDateRecordCount")
 

@@ -11,6 +11,11 @@ const INSERT = "INSERT"
 const MODIFY = "MODIFY"
 const REMOVE = "REMOVE"
 
+/**
+ * add-doc
+ * @param event
+ * @param context
+ */
 export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent, context: Context) => {
   initiateLambda(logger, event, context)
 

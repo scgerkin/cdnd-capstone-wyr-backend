@@ -41,13 +41,18 @@ export async function addNewQuestion(request: CreateQuestionRequest, authorId: s
   try {
     await repo.putNewQuestion(question);
   } catch (e) {
-    logger.error(e)
+    logger.error(e.message)
     throw e
   }
 
   return question
 }
 
+/**
+ * Gets a Question record from the database by the questionId.
+ * @param questionId The questionId of the record to retrieve.
+ * @returns a Question object retrieved from the database.
+ */
 export async function getQuestionById(questionId: string): Promise<Question> {
   logger.debug(
       "deleteQuestion initiated.",
@@ -59,16 +64,18 @@ export async function getQuestionById(questionId: string): Promise<Question> {
     return await repo.queryByQuestionId(questionId)
   } catch (e) {
     logger.error("Unable to retrieve question.", {questionId: questionId})
-    logger.error(e)
+    logger.error(e.message)
     //todo sanitize, also should be a 400 on controller, but below will be 401
     throw e
   }
 }
 
 /**
- * add-doc
- * @param questionId
- * @param userId
+ * Removes a Question record from the database.
+ * @param questionId The questionId of the record to remove.
+ * @param userId The userId of the requesting user.
+ * @throws Error if the requesting userId does not match the authorId of the question.
+ * @returns The questionId if deletion was successful.
  */
 export async function deleteQuestion(questionId: string, userId: string): Promise<any> {
   logger.debug(
@@ -89,15 +96,16 @@ export async function deleteQuestion(questionId: string, userId: string): Promis
     return questionId
   } catch (e) {
     logger.error("Unable to delete question.", {question: question})
-    logger.error(e)
+    logger.error(e.message)
     // todo handle/sanitize
     throw e
   }
 }
 
 /**
- * add-doc
- * @param authorId
+ * Gets a list of Question records from the database created by a specific author.
+ * @param authorId The author for which to retrieve records.
+ * @returns A list of Question records created by the author.
  */
 export async function getQuestionsByAuthor(authorId: string): Promise<Question[]> {
   return await repo.queryByAuthorId(authorId)
@@ -108,9 +116,7 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
  *  Note: The results received from the batch is NOT ordered based on the request
  *  So even though we get a list of IDs to use for batching in descending order,
  *  the results will not be ordered the same way.
- * Consider sorting here, although that may not be needed. The front end sorts
- *  when it displays stuff
- *  FIXME This needs to increment by 1 day if not enough results found
+ * TODO return lastEvaluatedKey if exists
  */
 export async function getQuestionsByDate(request: DateRecordRequest): Promise<any> {
   let dateRecords: QuestionDateRecord[] = await repo.getDateRecords(request)
@@ -149,7 +155,12 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
   return await repo.batchGetQuestions(questionPartitionKey)
 }
 
+/**
+ * Takes a string containing a valid, parsable date, decrements the day by 1,
+ * and returns the result in the form 'YYYY-MM-DD' as used by the question date
+ * table for partition hash key
+ * @param date The date to decrement
+ */
 function decrementDate(date: string): string {
   return getYearMonthDateString(new Date(date).getTime() - 86400000)
-
 }
