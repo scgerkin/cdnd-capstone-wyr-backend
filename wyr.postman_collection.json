@@ -1,0 +1,227 @@
+{
+	"info": {
+		"_postman_id": "02663866-e0f8-4683-95a0-e1d89e14c03e",
+		"name": "wyr",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user list",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userIds\": [\n\t\t\"sarahedo\",\n\t\t\"tylermcginnis\"\n\t\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users/list",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users/sarahedo",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users",
+						"sarahedo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userId\":\"sarahedo\",\n\t\"optionOneText\": \"the first option\",\n\t\"optionTwoText\": \"the second option\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "question by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/580420c5-e8e3-4f0a-b882-7da279bda944",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions",
+						"580420c5-e8e3-4f0a-b882-7da279bda944"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "question by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/am8ehyc8byjqgar0jgpub9",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions",
+						"am8ehyc8byjqgar0jgpub9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questions by author id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/author/sarahedo",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions",
+						"author",
+						"sarahedo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cast vote",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"questionId\":\"am8ehyc8byjqgar0jgpub9\",\n\t\"option\":\"optionOne\",\n\t\"userId\":\"johndoe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
