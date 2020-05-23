@@ -5,7 +5,7 @@ import {
   Context,
 } from "aws-lambda";
 import {Question} from "../../models/Question"
-import {CreateQuestionRequest} from "../../requests/Question"
+import {CreateQuestionRequest} from "../../requests/CreateQuestionRequest"
 import {addNewQuestion} from "../../services/QuestionService"
 import {createLogger} from "../../utils/logger";
 import {badRequest, requestSuccess, internalError, invalidUserId} from "../shared"
@@ -39,6 +39,13 @@ export const handler: APIGatewayProxyHandler =
       } catch (e) {
         return badRequest("Unable to parse request.", {request: event.body, error: e.message})
       }
+      // fixme uncomment after implementing auth
+      //  this can also be useful for validating that the authed user and the
+      //  data we receive from the post request is the same information
+      // request = {
+      //   ...request,
+      //   userId: userId
+      // }
 
       if (!validCreateRequest(request)) {
         return badRequest("Invalid create request. " +
@@ -46,7 +53,7 @@ export const handler: APIGatewayProxyHandler =
       }
 
       try {
-        const question: Question = await addNewQuestion(request, userId)
+        const question: Question = await addNewQuestion(request)
         return requestSuccess(question, 201)
       } catch (e) {
         return internalError(e.message)

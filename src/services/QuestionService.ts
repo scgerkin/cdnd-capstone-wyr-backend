@@ -3,7 +3,8 @@ import {getYearMonthDateString} from "../controllers/utils"
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
 import {getDateRecordCount} from "../repositories/QuestionRepository"
 import * as repo from "../repositories/QuestionRepository"
-import {CastVoteRequest, CreateQuestionRequest} from "../requests/Question"
+import {CreateQuestionRequest} from "../requests/CreateQuestionRequest"
+import {CastVoteRequest} from "../requests/CastVoteRequest"
 import {createLogger} from "../utils/logger"
 
 const logger = createLogger("QuestionService");
@@ -12,20 +13,19 @@ const logger = createLogger("QuestionService");
  * Creates a new Question from a CreateQuestionRequest and returns the result
  * after it has been persisted.
  * @param request A request containing the Question information.
- * @param authorId The ID of the user creating the new Question.
  * @return Created Question
  */
-export async function addNewQuestion(request: CreateQuestionRequest, authorId: string): Promise<Question> {
+export async function addNewQuestion(request: CreateQuestionRequest): Promise<Question> {
   logger.debug(
       "addNewQuestion initiated.",
       {
         createQuestionRequest: request,
-        authorId: authorId,
+        authorId: request.userId,
       })
 
   const question: Question = {
     questionId: uuidv4(),
-    authorId: authorId,
+    authorId: request.userId,
     createdAt: Date.now(),
     optionOne: {
       text: request.optionOneText,

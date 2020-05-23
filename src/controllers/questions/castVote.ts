@@ -4,7 +4,7 @@ import {
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda"
-import {CastVoteRequest} from "../../requests/Question"
+import {CastVoteRequest} from "../../requests/CastVoteRequest"
 import {addVoteToQuestion} from "../../services/QuestionService"
 
 import {createLogger} from "../../utils/logger"
