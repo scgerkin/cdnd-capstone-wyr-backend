@@ -157,33 +157,15 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
 
 /**
  * add-doc
- * fixme need to change what is being parsed as a vote
- *  To be consistent with how user information is stored, should receive 'optionOne'
- *  or 'optionTwo', not the actual text. Might be easier to handle as well
  * @param request
  */
 export async function addVoteToQuestion(request: CastVoteRequest): Promise<Question> {
   let question = await getQuestionById(request.questionId)
 
-  if (question.optionOne.votes.includes(request.userId)) {
-    question = {
-      ...question,
-      optionOne: {
-        ...question.optionOne,
-        votes: question.optionOne.votes.filter(vote => vote !== request.userId)
-      }
-    }
-  } else if (question.optionTwo.votes.includes(request.userId)) {
-    question = {
-      ...question,
-      optionTwo: {
-        ...question.optionTwo,
-        votes: question.optionTwo.votes.filter(vote => vote !== request.userId)
-      }
-    }
-  }
+  question = removeExistingVote(question, request.userId)
 
-  if (question.optionOne.text.toLowerCase().trim() === request.optionText.toLowerCase().trim()) {
+  //fixme this can probably be simplified to use 'question[request.option]: ...'
+  if (request.option.toLowerCase().trim() === "optionone") {
     question = {
       ...question,
       optionOne: {
@@ -191,7 +173,7 @@ export async function addVoteToQuestion(request: CastVoteRequest): Promise<Quest
         votes: question.optionOne.votes.concat([request.userId])
       }
     }
-  } else if (question.optionTwo.text.toLowerCase().trim() === request.optionText.toLowerCase().trim()) {
+  } else if (request.option.toLowerCase().trim() === "optiontwo") {
     question = {
       ...question,
       optionTwo: {
@@ -202,15 +184,33 @@ export async function addVoteToQuestion(request: CastVoteRequest): Promise<Quest
   } else {
     throw new Error(JSON.stringify({
       message: "The option text was not matched to an existing option.",
-      expected: {
-        optionOneText: question.optionOne.text,
-        optionTwoText: question.optionTwo.text
-      },
-      received: request.optionText
+      expected: "'optionOne' or 'optionTwo'",
+      received: request.option
     }))
   }
 
   return await repo.putQuestion(question)
+}
+
+function removeExistingVote(question: Question, userId: string): Question {
+  if (question.optionOne.votes.includes(userId)) {
+    question = {
+      ...question,
+      optionOne: {
+        ...question.optionOne,
+        votes: question.optionOne.votes.filter(vote => vote !== userId),
+      },
+    }
+  } else if (question.optionTwo.votes.includes(userId)) {
+    question = {
+      ...question,
+      optionTwo: {
+        ...question.optionTwo,
+        votes: question.optionTwo.votes.filter(vote => vote !== userId),
+      },
+    }
+  }
+  return question;
 }
 
 /**

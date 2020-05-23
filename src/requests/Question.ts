@@ -5,6 +5,6 @@ export interface CreateQuestionRequest {
 
 export interface CastVoteRequest {
   questionId: string,
-  optionText: string,
+  option: string,
   userId?: string
 }

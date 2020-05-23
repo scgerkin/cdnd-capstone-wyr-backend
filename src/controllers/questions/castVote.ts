@@ -48,7 +48,7 @@ export const handler: APIGatewayProxyHandler =
       if (!castVoteRequest.questionId) {
         return badRequest("Question ID is required.", {pathParameters: event.pathParameters})
       }
-      if (!castVoteRequest.optionText) {
+      if (!castVoteRequest.option) {
         return badRequest("Option text is required.", {request: castVoteRequest})
       }
       castVoteRequest = {
