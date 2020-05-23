@@ -6,3 +6,7 @@ export function getUserId(event: APIGatewayProxyEvent) {
   console.log(event)
   return "fakeUser"
 }
+
+export function addCertWrapper(cert: string): string {
+  return "-----BEGIN CERTIFICATE-----\n"+cert+"\n-----END CERTIFICATE-----";
+}
