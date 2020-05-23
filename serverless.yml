@@ -210,6 +210,8 @@ resources:
       Properties:
         TableName: ${self:provider.environment.USERS_TABLE}
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: ${self:provider.environment.USER_ID_INDEX}
             AttributeType: S
