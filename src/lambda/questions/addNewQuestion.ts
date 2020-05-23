@@ -7,9 +7,9 @@ import {
 import {Question} from "../../models/Question"
 import {CreateQuestionRequest} from "../../requests/CreateQuestionRequest"
 import {addNewQuestion} from "../../services/QuestionService"
-import {createLogger} from "../../utils/logger";
+import {getUserId} from "../../utils/auth"
+import {createLogger, initiateLambda} from "../../utils/logger";
 import {badRequest, requestSuccess, internalError, invalidUserId} from "../shared"
-import {getUserId, initiateLambda} from "../utils"
 
 const logger = createLogger("addNewQuestion")
 

@@ -1,8 +1,8 @@
 import {Context, DynamoDBStreamEvent, DynamoDBStreamHandler} from "aws-lambda";
 import {QuestionDateRecord} from "../../models/Question"
 import {deleteDateRecord, putDateRecord} from "../../repositories/QuestionRepository"
-import {createLogger} from "../../utils/logger";
-import {getYearMonthDateString, initiateLambda} from "../utils"
+import {getYearMonthDateString} from "../../utils/formatters"
+import {createLogger, initiateLambda} from "../../utils/logger";
 
 const logger = createLogger("handleQuestionUpdateStream")
 export const QUESTION_IDS_BY_DATE_TABLE = process.env.QUESTION_IDS_BY_DATE_TABLE

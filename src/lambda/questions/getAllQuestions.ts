@@ -7,9 +7,9 @@ import {
 import {DateRecordRequest} from "../../models/Question"
 import {MAX_QUERY_LIMIT} from "../../repositories/QuestionRepository"
 import {getQuestionsByDate} from "../../services/QuestionService"
-import {createLogger} from "../../utils/logger"
+import {getYearMonthDateString} from "../../utils/formatters"
+import {createLogger, initiateLambda} from "../../utils/logger"
 import {badRequest, internalError, requestSuccess} from "../shared"
-import {getYearMonthDateString, initiateLambda} from "../utils"
 
 const logger = createLogger("getAllQuestions")
 const DATE_REGEX = new RegExp("^(19|20)\\d{2}[\\-](0[1-9]|1[0-2])[\\-](0[1-9]|[12]\\d|3[01])$")

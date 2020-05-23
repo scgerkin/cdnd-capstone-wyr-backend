@@ -1,10 +1,10 @@
 import {v4 as uuidv4} from 'uuid';
-import {getYearMonthDateString} from "../lambda/utils"
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
 import {getDateRecordCount} from "../repositories/QuestionRepository"
 import * as repo from "../repositories/QuestionRepository"
 import {CreateQuestionRequest} from "../requests/CreateQuestionRequest"
 import {CastVoteRequest} from "../requests/CastVoteRequest"
+import {getYearMonthDateString} from "../utils/formatters"
 import {createLogger} from "../utils/logger"
 
 const logger = createLogger("QuestionService");

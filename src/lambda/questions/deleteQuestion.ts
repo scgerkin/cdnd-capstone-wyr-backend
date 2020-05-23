@@ -5,9 +5,9 @@ import {
   Context,
 } from "aws-lambda"
 import {deleteQuestion} from "../../services/QuestionService"
-import {createLogger} from "../../utils/logger"
+import {getUserId} from "../../utils/auth"
+import {createLogger, initiateLambda} from "../../utils/logger"
 import {badRequest, requestSuccess, invalidUserId} from "../shared"
-import {getUserId, initiateLambda} from "../utils"
 
 const logger = createLogger("deleteQuestion")
 
