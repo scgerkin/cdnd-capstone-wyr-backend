@@ -2,7 +2,9 @@
   {
     "userId": "sarahedo",
     "name": "Sarah Edo",
-    "avatarURL": "http://placekitten.com/150/150",
+    "nickname": "Sarah Edo",
+    "email": "sarahedo@example.com",
+    "avatarUrl": "http://placekitten.com/150/150",
     "answers": [
       {
         "questionId": "8xf0y6ziyjabvozdd253nd",
@@ -29,7 +31,9 @@
   {
     "userId": "tylermcginnis",
     "name": "Tyler McGinnis",
-    "avatarURL": "http://placekitten.com/149/149",
+    "nickname": "Tyler McGinnis",
+    "email": "tylermcginnis@example.com",
+    "avatarUrl": "http://placekitten.com/149/149",
     "answers": [
       {
         "questionId": "vthrdm985a262al8qx3do",
@@ -48,7 +52,9 @@
   {
     "userId": "johndoe",
     "name": "John Doe",
-    "avatarURL": "http://placekitten.com/151/151",
+    "nickname": "John Doe",
+    "email": "johndoe@example.com",
+    "avatarUrl": "http://placekitten.com/151/151",
     "answers": [
       {
         "questionId": "xj352vofupe1dqz9emx13r",
