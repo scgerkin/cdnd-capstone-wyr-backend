@@ -6,9 +6,8 @@ import {
 } from "aws-lambda"
 import {Question} from "../../models/Question"
 import {getQuestionById} from "../../services/QuestionService"
-import {createLogger} from "../../utils/logger"
+import {createLogger, initiateLambda} from "../../utils/logger"
 import {badRequest, requestSuccess} from "../shared"
-import {initiateLambda} from "../utils"
 
 const logger = createLogger("getQuestionById")
 

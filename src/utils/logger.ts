@@ -1,4 +1,6 @@
-import * as winston from "winston";
+import {APIGatewayProxyEvent, Context, DynamoDBStreamEvent} from "aws-lambda"
+import * as winston from "winston"
+import {Logger} from "winston"
 
 export function createLogger(loggerName: string) {
   return winston.createLogger({
@@ -25,4 +27,14 @@ export function logRepoParameters(logger: winston.Logger, parameters) {
 
 export function logRepoResult(logger: winston.Logger, result) {
   logger.log("info", "Result received.", {result: result})
+}
+
+export const initiateLambda = (logger: Logger, event: APIGatewayProxyEvent | DynamoDBStreamEvent, context: Context) => {
+  logger.log(
+      "info",
+      "Begin Lambda",
+      {
+        event: event,
+        context: context,
+      })
 }

@@ -38,7 +38,7 @@ provider:
 # todo version API, endpoint should be /api/v0/endpoint
 functions:
   AddNewQuestion:
-    handler: src/controllers/questions/addNewQuestion.handler
+    handler: src/lambda/questions/addNewQuestion.handler
     iamRoleStatementsName: AddNewQuestion
     iamRoleStatements:
       - Effect: Allow
@@ -52,7 +52,7 @@ functions:
           cors: true
 
   DeleteQuestion:
-    handler: src/controllers/questions/deleteQuestion.handler
+    handler: src/lambda/questions/deleteQuestion.handler
     iamRoleStatementsName: DeleteQuestion
     iamRoleStatements:
       - Effect: Allow
@@ -70,7 +70,7 @@ functions:
           cors: true
 
   GetQuestionById:  # nts no auth
-    handler: src/controllers/questions/getQuestionById.handler
+    handler: src/lambda/questions/getQuestionById.handler
     iamRoleStatementsName: GetQuestionById
     iamRoleStatements:
     - Effect: Allow
@@ -84,7 +84,7 @@ functions:
           cors: true
 
   GetQuestionsByAuthor:   # nts no auth
-    handler: src/controllers/questions/getQuestionsByAuthor.handler
+    handler: src/lambda/questions/getQuestionsByAuthor.handler
     iamRoleStatementsName: GetQuestionsByAuthor
     iamRoleStatements:
     - Effect: Allow
@@ -100,7 +100,7 @@ functions:
   # fixme: rename this and all called functions
   # nts this is paginated, returns most recent if no path params
   GetAllQuestions:    # nts no auth
-    handler: src/controllers/questions/getAllQuestions.handler
+    handler: src/lambda/questions/getAllQuestions.handler
     iamRoleStatementsName: GetAllQuestions
     iamRoleStatements:
       - Effect: Allow
@@ -119,7 +119,7 @@ functions:
           cors: true
 
   HandleQuestionUpdateStream:
-    handler: src/controllers/questions/handleQuestionUpdateStream.handler
+    handler: src/lambda/questions/handleQuestionUpdateStream.handler
     iamRoleStatementsName: HandleQuestionUpdateStream
     iamRoleStatements:
       - Effect: Allow
@@ -133,7 +133,7 @@ functions:
           arn: !GetAtt QuestionsDynamoDBTable.StreamArn
 
   CastVote:
-    handler: src/controllers/questions/castVote.handler
+    handler: src/lambda/questions/castVote.handler
     iamRoleStatementsName: CastVote
     iamRoleStatements:
       - Effect: Allow
@@ -151,7 +151,7 @@ functions:
           cors: true
 
   GetUser:
-    handler: src/controllers/users/getUser.handler
+    handler: src/lambda/users/getUser.handler
     iamRoleStatementsName: GetUser
     iamRoleStatements:
       - Effect: Allow
@@ -165,7 +165,7 @@ functions:
           cors: true
 
   BatchGetUsers:
-    handler: src/controllers/users/batchGetUsers.handler
+    handler: src/lambda/users/batchGetUsers.handler
     iamRoleStatementsName: BatchGetUsers
     iamRoleStatements:
       - Effect: Allow

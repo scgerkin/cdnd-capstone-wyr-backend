@@ -6,10 +6,10 @@ import {
 } from "aws-lambda"
 import {CastVoteRequest} from "../../requests/CastVoteRequest"
 import {addVoteToQuestion} from "../../services/QuestionService"
+import {getUserId} from "../../utils/auth"
 
-import {createLogger} from "../../utils/logger"
+import {createLogger, initiateLambda} from "../../utils/logger"
 import {badRequest, invalidUserId, requestSuccess} from "../shared"
-import {getUserId, initiateLambda} from "../utils"
 
 const logger = createLogger("updateQuestion")
 

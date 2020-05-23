@@ -1,10 +1,10 @@
 import {v4 as uuidv4} from 'uuid';
-import {getYearMonthDateString} from "../controllers/utils"
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
-import {getDateRecordCount} from "../repositories/QuestionRepository"
+import {getDateRecordCount, getDateRecords} from "../repositories/QuestionDateRepository"
 import * as repo from "../repositories/QuestionRepository"
-import {CreateQuestionRequest} from "../requests/CreateQuestionRequest"
 import {CastVoteRequest} from "../requests/CastVoteRequest"
+import {CreateQuestionRequest} from "../requests/CreateQuestionRequest"
+import {getYearMonthDateString} from "../utils/formatters"
 import {createLogger} from "../utils/logger"
 
 const logger = createLogger("QuestionService");
@@ -119,7 +119,7 @@ export async function getQuestionsByAuthor(authorId: string): Promise<Question[]
  * TODO return lastEvaluatedKey if exists
  */
 export async function getQuestionsByDate(request: DateRecordRequest): Promise<any> {
-  let dateRecords: QuestionDateRecord[] = await repo.getDateRecords(request)
+  let dateRecords: QuestionDateRecord[] = await getDateRecords(request)
 
   //fixme there is probably a better solution (besides `scan`)
   if (dateRecords.length < request.limit) {
@@ -139,7 +139,7 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
         limit: request.limit - dateRecords.length,
         questionCreateDate: decrementDate(request.questionCreateDate)
       }
-      const recordsToAppend = await repo.getDateRecords(request)
+      const recordsToAppend = await getDateRecords(request)
       dateRecords = dateRecords.concat(recordsToAppend)
     }
   }

@@ -6,9 +6,8 @@ import {
 } from "aws-lambda"
 import {User} from "../../models/User"
 import {getUsers} from "../../services/UserService"
-import {createLogger} from "../../utils/logger"
+import {createLogger, initiateLambda} from "../../utils/logger"
 import {badRequest, requestSuccess} from "../shared"
-import {initiateLambda} from "../utils"
 
 const logger = createLogger("batchGetUsers")
 
