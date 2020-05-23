@@ -49,6 +49,7 @@ functions:
       - http:
           method: post
           path: questions
+          cors: true
 
   DeleteQuestion:
     handler: src/controllers/questions/deleteQuestion.handler
@@ -66,6 +67,7 @@ functions:
       - http:
           method: delete
           path: questions/{questionId}
+          cors: true
 
   GetQuestionById:  # nts no auth
     handler: src/controllers/questions/getQuestionById.handler
@@ -79,6 +81,7 @@ functions:
       - http:
           method: get
           path: questions/{questionId}
+          cors: true
 
   GetQuestionsByAuthor:   # nts no auth
     handler: src/controllers/questions/getQuestionsByAuthor.handler
@@ -92,6 +95,7 @@ functions:
       - http:
           method: get
           path: questions/author/{authorId}
+          cors: true
 
   # fixme: rename this and all called functions
   # nts this is paginated, returns most recent if no path params
@@ -112,6 +116,7 @@ functions:
       - http:
           method: get
           path: questions
+          cors: true
 
   HandleQuestionUpdateStream:
     handler: src/controllers/questions/handleQuestionUpdateStream.handler
@@ -143,9 +148,20 @@ functions:
       - http:
           method: put
           path: questions
+          cors: true
 
 resources:
   Resources:
+    GatewayResponseDefault4xx:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+        ResponseType: DEFAULT_4XX
+        RestApiId: !Ref ApiGatewayRestApi
+
     QuestionsDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
