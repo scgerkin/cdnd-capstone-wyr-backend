@@ -150,6 +150,21 @@ functions:
           path: questions
           cors: true
 
+  GetUser:
+    handler: src/controllers/users/getUser.handler
+    iamRoleStatementsName: GetUser
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: get
+          path: users/{userId}
+          cors: true
+
+
 resources:
   Resources:
     GatewayResponseDefault4xx:

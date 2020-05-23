@@ -10,3 +10,19 @@ export function createLogger(loggerName: string) {
     ]
   })
 }
+
+/**
+ * FIXME this might be better as a class
+ */
+
+export function logStart(logger: winston.Logger, funcName, args?) {
+  logger.log("info", `Initiate ${funcName}.`, {args: args})
+}
+
+export function logRepoParameters(logger: winston.Logger, parameters) {
+  logger.log("info", "Parameters created.", {parameters: parameters})
+}
+
+export function logRepoResult(logger: winston.Logger, result) {
+  logger.log("info", "Result received.", {result: result})
+}
