@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-import {getYearMonthDateString} from "../controllers/utils"
+import {getYearMonthDateString} from "../lambda/utils"
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
 import {getDateRecordCount} from "../repositories/QuestionRepository"
 import * as repo from "../repositories/QuestionRepository"
