@@ -1,3 +1,6 @@
+/**
+ * TODO: Refactor these into separate files
+ */
 
 export interface Question {
   questionId: string
@@ -12,6 +15,7 @@ export interface Option {
   text:  string
 }
 
+//todo deprecate? or put into Question model
 export interface QuestionPartitionKey {
   authorId:  string
   createdAt: number

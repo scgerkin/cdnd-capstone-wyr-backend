@@ -255,6 +255,10 @@ export async function getDateRecordCount(): Promise<number> {
   return result.Table.ItemCount
 }
 
+/**
+ * TODO Remove and use functions from utils/logger
+ */
+
 function logStart(funcName, args?) {
   logger.log("info", `Initiate ${funcName}.`, {args: args})
 }

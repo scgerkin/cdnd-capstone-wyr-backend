@@ -33,10 +33,11 @@ export const handler: APIGatewayProxyHandler =
         logger.log("info", "Retrieved question", {question: question})
         return requestSuccess(question)
       } catch (e) {
-        logger.error(e)
+        logger.error(e.message)
         return badRequest("Unable to retrieve question with that ID.",
             {
               questionId: questionId,
+              error: e.message
             })
       }
     }
