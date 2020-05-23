@@ -42,3 +42,25 @@ export async function queryUserById(userId: string): Promise<User> {
 
   return result.Items[0] as User
 }
+
+/**
+ * add-doc
+ * @param userIds
+ */
+export async function batchGetUsers(userIds: {userId: string}[]): Promise<User[]> {
+  logStart(logger, "batchGetUsers", userIds)
+
+  const parameters = {
+    RequestItems: {
+      [USERS_TABLE]: {
+        Keys: userIds
+      }
+    }
+  }
+  logRepoParameters(logger, parameters)
+
+  const result = await docClient.batchGet(parameters).promise()
+  logRepoResult(logger, result)
+
+  return result.Responses[USERS_TABLE] as User[]
+}

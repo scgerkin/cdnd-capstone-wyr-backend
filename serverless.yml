@@ -164,6 +164,19 @@ functions:
           path: users/{userId}
           cors: true
 
+  BatchGetUsers:
+    handler: src/controllers/users/batchGetUsers.handler
+    iamRoleStatementsName: BatchGetUsers
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:BatchGetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: post
+          path: users/list
+          cors: true
 
 resources:
   Resources:
