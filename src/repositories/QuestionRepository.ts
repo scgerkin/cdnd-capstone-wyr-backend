@@ -40,8 +40,9 @@ export async function putQuestion(question: Question): Promise<Question> {
 }
 
 /**
- * add-doc
- * @param questionId
+ * Queries the database for the requested Question by provided questionId.
+ * @param questionId The userId of the record to retrieve.
+ * @returns a Question record if found.
  */
 export async function queryByQuestionId(questionId: string): Promise<Question> {
   logStart("queryByQuestionId", questionId)
