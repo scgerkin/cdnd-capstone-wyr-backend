@@ -1,13 +1,8 @@
-/**
- * TODO:
- *  1. Refactor QuestionDateRecord into it's own repository, this is a little long
- *  2. Move the log start functions out into project utils. These are really handy.
- */
 import * as DynamoDB from "aws-sdk/clients/dynamodb"
 import {DocumentClient} from "aws-sdk/clients/dynamodb"
 
 import {Question} from "../models/Question";
-import {createLogger} from "../utils/logger"
+import {createLogger, logRepoParameters, logRepoResult, logStart} from "../utils/logger"
 
 const logger = createLogger("QuestionRepository");
 const docClient: DocumentClient = new DynamoDB.DocumentClient();
@@ -23,16 +18,16 @@ export const MAX_QUERY_LIMIT = Number(process.env.MAX_QUERY_LIMIT)
  * @param question
  */
 export async function putQuestion(question: Question): Promise<Question> {
-  logStart("putQuestion", question)
+  logStart(logger, "putQuestion", question)
 
   const parameters = {
     TableName: QUESTIONS_TABLE,
     Item: question,
   }
-  logParameters(parameters)
+  logRepoParameters(logger, parameters)
 
   const result = await docClient.put(parameters).promise()
-  logResult(result)
+  logRepoResult(logger, result)
 
   return question;
 }
@@ -43,7 +38,7 @@ export async function putQuestion(question: Question): Promise<Question> {
  * @returns a Question record if found.
  */
 export async function queryByQuestionId(questionId: string): Promise<Question> {
-  logStart("queryByQuestionId", questionId)
+  logStart(logger, "queryByQuestionId", questionId)
 
   const parameters = {
     TableName: QUESTIONS_TABLE,
@@ -53,10 +48,10 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
       ":questionId": questionId,
     },
   }
-  logParameters(parameters)
+  logRepoParameters(logger, parameters)
 
   const result = await docClient.query(parameters).promise()
-  logResult(result)
+  logRepoResult(logger, result)
 
   // fixme move into service
   if (!result || result.Items.length <= 0) {
@@ -77,7 +72,7 @@ export async function queryByQuestionId(questionId: string): Promise<Question> {
  * @param question
  */
 export async function deleteQuestion(question: Question): Promise<Question> {
-  logStart("deleteQuestion", question)
+  logStart(logger, "deleteQuestion", question)
 
   const conditionExpression = `${QUESTION_ID_INDEX} = :questionId`
   logger.debug("Condition expression", {conditionExpression: conditionExpression})
@@ -93,10 +88,10 @@ export async function deleteQuestion(question: Question): Promise<Question> {
       ":questionId": question.questionId
     }
   }
-  logParameters(parameters)
+  logRepoParameters(logger, parameters)
 
   const result = await docClient.delete(parameters).promise()
-  logResult(result)
+  logRepoResult(logger, result)
 
   return question
 }
@@ -106,17 +101,17 @@ export async function deleteQuestion(question: Question): Promise<Question> {
  * @param authorId
  */
 export async function queryByAuthorId(authorId: string): Promise<Question[]> {
-  logStart("queryByAuthorId", authorId)
+  logStart(logger, "queryByAuthorId", authorId)
 
   const parameters = {
     TableName: QUESTIONS_TABLE,
     KeyConditionExpression: `${QUESTION_AUTHOR_ID_INDEX} = :authorId`,
     ExpressionAttributeValues: { ":authorId": authorId}
   }
-  logParameters(parameters)
+  logRepoParameters(logger, parameters)
 
   const result = await docClient.query(parameters).promise()
-  logResult(result)
+  logRepoResult(logger, result)
 
   return result.Items as Question[]
 }
@@ -127,7 +122,7 @@ export async function queryByAuthorId(authorId: string): Promise<Question[]> {
  * @param questionIds
  */
 export async function batchGetQuestions(questionIds: {authorId: string, createdAt: number}[]): Promise<Question[]> {
-  logStart("batchGetQuestions", questionIds)
+  logStart(logger, "batchGetQuestions", questionIds)
 
   const parameters = {
     RequestItems: {
@@ -136,26 +131,10 @@ export async function batchGetQuestions(questionIds: {authorId: string, createdA
       }
     }
   }
-  logParameters(parameters)
+  logRepoParameters(logger, parameters)
 
   const result = await docClient.batchGet(parameters).promise()
-  logResult(result)
+  logRepoResult(logger, result)
 
   return result.Responses[QUESTIONS_TABLE] as Question[]
-}
-
-/**
- * TODO Remove and use functions from utils/logger
- */
-
-function logStart(funcName, args?) {
-  logger.log("info", `Initiate ${funcName}.`, {args: args})
-}
-
-function logParameters(parameters) {
-  logger.log("info", "Parameters created.", {parameters: parameters})
-}
-
-function logResult(result) {
-  logger.log("info", "Result received.", {result: result})
 }
