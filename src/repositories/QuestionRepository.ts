@@ -5,9 +5,8 @@
  */
 import * as DynamoDB from "aws-sdk/clients/dynamodb"
 import {DocumentClient} from "aws-sdk/clients/dynamodb"
-import QueryOutput = DocumentClient.QueryOutput
 
-import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question";
+import {Question} from "../models/Question";
 import {createLogger} from "../utils/logger"
 
 const logger = createLogger("QuestionRepository");
@@ -17,7 +16,6 @@ export const QUESTIONS_TABLE = process.env.QUESTIONS_TABLE
 export const QUESTION_ID_INDEX = process.env.QUESTION_ID_INDEX
 export const QUESTION_AUTHOR_ID_INDEX = process.env.QUESTION_AUTHOR_ID_INDEX
 export const QUESTION_CREATED_AT_INDEX = process.env.QUESTION_CREATED_AT_INDEX
-export const QUESTION_IDS_BY_DATE_TABLE = process.env.QUESTION_IDS_BY_DATE_TABLE
 export const MAX_QUERY_LIMIT = Number(process.env.MAX_QUERY_LIMIT)
 
 /**
@@ -144,116 +142,6 @@ export async function batchGetQuestions(questionIds: {authorId: string, createdA
   logResult(result)
 
   return result.Responses[QUESTIONS_TABLE] as Question[]
-}
-
-/*
-********************************************************************************
-* FIXME Refactor the below out into its own module. Everything below deals exclusively
-*  with date records
-********************************************************************************
- */
-
-/**
- * add-doc
- * @param dateRecord
- */
-export async function putDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
-  logStart("putDateRecord", {dateRecord: dateRecord})
-
-  const parameters = {
-    TableName: QUESTION_IDS_BY_DATE_TABLE,
-    Item: dateRecord
-  }
-  logParameters(parameters)
-
-  const result = await docClient.put(parameters).promise()
-  logResult(result)
-
-  return dateRecord
-}
-
-/**
- * add-doc
- * @param dateRecord
- */
-export async function deleteDateRecord(dateRecord: QuestionDateRecord): Promise<QuestionDateRecord> {
-  logStart("deleteDateRecord", {dateRecord: dateRecord})
-
-  const parameters = {
-    TableName: QUESTION_IDS_BY_DATE_TABLE,
-    Key: {
-      questionCreateDate: dateRecord.questionCreateDate,
-      createdAt: dateRecord.createdAt
-    },
-    ConditionExpression: `questionId = :questionId`,
-    ExpressionAttributeValues: {
-      ":questionId": dateRecord.questionId
-    }
-  }
-  logParameters(parameters)
-
-  const result = await docClient.delete(parameters).promise()
-  logResult(result)
-
-  return dateRecord
-}
-
-/**
- * add-doc
- * @param request
- */
-export async function getDateRecords(request: DateRecordRequest): Promise<QuestionDateRecord[]> {
-  logStart("getDateRecords", {request: request})
-
-  let parameters = {
-    TableName: QUESTION_IDS_BY_DATE_TABLE,
-    Limit: request.limit < MAX_QUERY_LIMIT ? request.limit : MAX_QUERY_LIMIT,
-    KeyConditionExpression: "questionCreateDate = :questionCreateDate",
-    ExpressionAttributeValues: { ":questionCreateDate": request.questionCreateDate},
-    ExclusiveStartKey: request.lastEvaluatedKey ? request.lastEvaluatedKey : null,
-    ScanIndexForward: false
-  }
-  logParameters(parameters)
-
-  let result: QueryOutput = await docClient.query(parameters).promise()
-  logResult(result)
-
-  let questionDateRecords = result.Items as QuestionDateRecord[]
-  logger.debug("questionDateRecords", {questionDateRecords: questionDateRecords})
-
-  while(!!result.LastEvaluatedKey && questionDateRecords.length < request.limit) {
-    logger.debug("LastEvaluatedKey", {LastEvaluatedKey: result.LastEvaluatedKey})
-    parameters = {
-      ...parameters,
-      // @ts-ignore
-      ExclusiveStartKey: result.LastEvaluatedKey
-    }
-    logParameters(parameters)
-    result = await docClient.query(parameters).promise()
-    logResult(result)
-    questionDateRecords = questionDateRecords.concat(result.Items as QuestionDateRecord[])
-    logger.debug("questionDateRecords", {questionDateRecords: questionDateRecords})
-  }
-
-  return questionDateRecords
-}
-
-/**
- * add-doc
- */
-export async function getDateRecordCount(): Promise<number> {
-  logStart("getDateRecordCount")
-
-  const parameters = {
-    TableName: QUESTION_IDS_BY_DATE_TABLE
-  }
-  logParameters(parameters)
-
-  const db = new DynamoDB
-  const result = await db.describeTable(parameters).promise()
-  logResult(result)
-
-  return result.Table.ItemCount
 }
 
 /**

@@ -1,6 +1,6 @@
 import {Context, DynamoDBStreamEvent, DynamoDBStreamHandler} from "aws-lambda";
 import {QuestionDateRecord} from "../../models/Question"
-import {deleteDateRecord, putDateRecord} from "../../repositories/QuestionRepository"
+import {deleteDateRecord, putDateRecord} from "../../repositories/QuestionDateRepository"
 import {getYearMonthDateString} from "../../utils/formatters"
 import {createLogger, initiateLambda} from "../../utils/logger";
 
