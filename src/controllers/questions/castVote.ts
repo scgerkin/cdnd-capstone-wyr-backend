@@ -51,10 +51,11 @@ export const handler: APIGatewayProxyHandler =
       if (!castVoteRequest.option) {
         return badRequest("Option text is required.", {request: castVoteRequest})
       }
-      castVoteRequest = {
-        ...castVoteRequest,
-        userId: userId
-      }
+      // fixme uncomment after auth is implemented
+      // castVoteRequest = {
+      //   ...castVoteRequest,
+      //   userId: userId
+      // }
 
       try {
         const updatedQuestion = await addVoteToQuestion(castVoteRequest)
