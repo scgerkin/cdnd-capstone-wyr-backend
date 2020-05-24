@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyHandler =
 
       let userId: string;
       try {
-        userId = getUserId(event)
+        userId = getUserId(event, logger)
         logger.log("info", "Retrieved userId", {userId: userId})
       } catch (e) {
         logger.error(e.message)
@@ -51,11 +51,10 @@ export const handler: APIGatewayProxyHandler =
       if (!castVoteRequest.option) {
         return badRequest("Option text is required.", {request: castVoteRequest})
       }
-      // fixme uncomment after auth is implemented
-      // castVoteRequest = {
-      //   ...castVoteRequest,
-      //   userId: userId
-      // }
+      castVoteRequest = {
+        ...castVoteRequest,
+        userId: userId
+      }
 
       try {
         const updatedQuestion = await addVoteToQuestion(castVoteRequest)

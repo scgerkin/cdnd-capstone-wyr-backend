@@ -26,7 +26,7 @@ export const handler: APIGatewayProxyHandler =
 
       let userId: string;
       try {
-        userId = getUserId(event)
+        userId = getUserId(event, logger)
         logger.log("info", "Retrieved userId", {userId: userId})
       } catch (e) {
         logger.error(e.message)
@@ -39,13 +39,11 @@ export const handler: APIGatewayProxyHandler =
       } catch (e) {
         return badRequest("Unable to parse request.", {request: event.body, error: e.message})
       }
-      // fixme uncomment after implementing auth
-      //  this can also be useful for validating that the authed user and the
-      //  data we receive from the post request is the same information
-      // request = {
-      //   ...request,
-      //   userId: userId
-      // }
+
+      request = {
+        ...request,
+        userId: userId
+      }
 
       if (!validCreateRequest(request)) {
         return badRequest("Invalid create request. " +
