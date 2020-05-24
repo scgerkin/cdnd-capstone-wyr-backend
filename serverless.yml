@@ -35,8 +35,10 @@ provider:
     USERS_TABLE: users-${self:service.name}-${self:provider.stage}
     USER_ID_INDEX: userId
 
-# todo version API, endpoint should be /api/v0/endpoint
 functions:
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
   AddNewQuestion:
     handler: src/lambda/questions/addNewQuestion.handler
     iamRoleStatementsName: AddNewQuestion
@@ -48,6 +50,7 @@ functions:
     events:
       - http:
           method: post
+          authorizer: Auth
           path: questions
           cors: true
 
@@ -66,10 +69,11 @@ functions:
     events:
       - http:
           method: delete
+          authorizer: Auth
           path: questions/{questionId}
           cors: true
 
-  GetQuestionById:  # nts no auth
+  GetQuestionById:
     handler: src/lambda/questions/getQuestionById.handler
     iamRoleStatementsName: GetQuestionById
     iamRoleStatements:
@@ -83,7 +87,7 @@ functions:
           path: questions/{questionId}
           cors: true
 
-  GetQuestionsByAuthor:   # nts no auth
+  GetQuestionsByAuthor:
     handler: src/lambda/questions/getQuestionsByAuthor.handler
     iamRoleStatementsName: GetQuestionsByAuthor
     iamRoleStatements:
@@ -97,9 +101,9 @@ functions:
           path: questions/author/{authorId}
           cors: true
 
-  # fixme: rename this and all called functions
+  # todo: needs a better name to reflect actual functionality
   # nts this is paginated, returns most recent if no path params
-  GetAllQuestions:    # nts no auth
+  GetAllQuestions:
     handler: src/lambda/questions/getAllQuestions.handler
     iamRoleStatementsName: GetAllQuestions
     iamRoleStatements:
@@ -147,7 +151,23 @@ functions:
     events:
       - http:
           method: put
+          authorizer: Auth
           path: questions
+          cors: true
+
+  HandleLogin:
+    handler: src/lambda/users/handleLogin.handler
+    iamRoleStatementsName: HandleLogin
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: post
+          path: users
           cors: true
 
   GetUser:

@@ -31,7 +31,7 @@ export const handler: APIGatewayProxyHandler =
 
       let userId: string;
       try {
-        userId = getUserId(event)
+        userId = getUserId(event, logger)
         logger.log("info", "Retrieved userId", {userId: userId})
       } catch (e) {
         logger.error(e)

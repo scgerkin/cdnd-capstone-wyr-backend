@@ -48,3 +48,7 @@ export async function getUsers(userIds: string[]): Promise<User[]> {
 
   return await repo.batchGetUsers(ids)
 }
+
+export async function updateUser(user: User): Promise<User> {
+  return await repo.putUser(user)
+}

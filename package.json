@@ -7,13 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^0.19.2",
     "jimp": "^0.12.0",
+    "jsonwebtoken": "^8.5.1",
     "source-map-support": "^0.5.10",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^10.12.18",
     "aws-sdk": "^2.679.0",
     "fork-ts-checker-webpack-plugin": "^3.0.1",
