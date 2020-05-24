@@ -64,3 +64,18 @@ export async function batchGetUsers(userIds: {userId: string}[]): Promise<User[]
 
   return result.Responses[USERS_TABLE] as User[]
 }
+
+export async function putUser(user: User): Promise<User> {
+  logStart(logger, "putUser", user)
+
+  const parameters = {
+    TableName: USERS_TABLE,
+    Item: user
+  }
+  logRepoParameters(logger, parameters)
+
+  const result = await docClient.put(parameters).promise()
+  logRepoResult(logger, result)
+
+  return user
+}

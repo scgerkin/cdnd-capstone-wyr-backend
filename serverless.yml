@@ -155,6 +155,21 @@ functions:
           path: questions
           cors: true
 
+  HandleLogin:
+    handler: src/lambda/users/handleLogin.handler
+    iamRoleStatementsName: HandleLogin
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: post
+          path: users
+          cors: true
+
   GetUser:
     handler: src/lambda/users/getUser.handler
     iamRoleStatementsName: GetUser

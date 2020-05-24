@@ -4,11 +4,11 @@ export interface User {
   nickname?: string
   email:     string
   avatarUrl: string
-  answers:   Answer[],
+  answers:   Answer[]
   questions: string[]
 }
 
 export interface Answer {
-  questionId: string,
+  questionId: string
   answer:     string
 }
