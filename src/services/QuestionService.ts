@@ -165,26 +165,27 @@ export async function addVoteToQuestion(request: CastVoteRequest): Promise<Quest
   question = removeExistingVote(question, request.userId)
 
   //fixme this can probably be simplified to use 'question[request.option]: ...'
-  if (request.option.toLowerCase().trim() === "optionone") {
-    question = {
+  switch(request.option.toLowerCase().trim()) {
+    case "optionone": question = {
       ...question,
       optionOne: {
         ...question.optionOne,
         votes: question.optionOne.votes.concat([request.userId])
       }
     }
-  } else if (request.option.toLowerCase().trim() === "optiontwo") {
-    question = {
+    break;
+    case "optiontwo": question = {
       ...question,
       optionTwo: {
         ...question.optionTwo,
         votes: question.optionTwo.votes.concat([request.userId])
       }
     }
-  } else {
-    throw new Error(JSON.stringify({
+    break;
+    case "remove": break;
+    default: throw new Error(JSON.stringify({
       message: "The option text was not matched to an existing option.",
-      expected: "'optionOne' or 'optionTwo'",
+      expected: "'optionOne', 'optionTwo', or 'remove' (case insensitive)",
       received: request.option
     }))
   }
