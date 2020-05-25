@@ -1,6 +1,8 @@
 import {Context, DynamoDBStreamEvent, DynamoDBStreamHandler} from "aws-lambda";
 import {QuestionDateRecord} from "../../models/Question"
 import {deleteDateRecord, putDateRecord} from "../../repositories/QuestionDateRepository"
+import {putUser} from "../../repositories/UserRepository"
+import {getUserById} from "../../services/UserService"
 import {getYearMonthDateString} from "../../utils/formatters"
 import {createLogger, initiateLambda} from "../../utils/logger";
 
@@ -46,6 +48,9 @@ async function handleInsert(record): Promise<QuestionDateRecord> {
   logger.debug("Image", {image: image})
 
   const dateRecord = getDateRecord(image)
+  const user = await getUserById(dateRecord.authorId)
+  user.questions = user.questions.concat([dateRecord.questionId])
+  await putUser(user)
   await putDateRecord(dateRecord)
   logger.info("New date record persisted.", {dateRecord: dateRecord})
   return dateRecord
@@ -65,6 +70,9 @@ async function handleRemove(record): Promise<QuestionDateRecord> {
   logger.debug("Image", {image: image})
 
   const dateRecord = getDateRecord(image)
+  const user = await getUserById(dateRecord.authorId)
+  user.questions = user.questions.filter(q => q !== dateRecord.questionId)
+  await putUser(user)
   await deleteDateRecord(dateRecord)
   logger.info("Date record removed.", {dateRecord: dateRecord})
 
