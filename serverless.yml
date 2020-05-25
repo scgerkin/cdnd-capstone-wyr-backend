@@ -231,6 +231,22 @@ functions:
           path: users/uploadUrl
           cors: true
 
+  UpdateUser:
+    handler: src/lambda/users/updateUser.handler
+    iamRoleStatementsName: UpdateUser
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: put
+          authorizer: Auth
+          path: users
+          cors: true
+
 resources:
   Resources:
     GatewayResponseDefault4xx:

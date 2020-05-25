@@ -334,6 +334,44 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "update display name",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"newName\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -360,13 +398,13 @@
 	],
 	"variable": [
 		{
-			"id": "452cd7e7-783d-41b2-abf6-42dcda509289",
+			"id": "93f85690-a762-4586-b25e-29a46ac431a8",
 			"key": "jwt",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "eca90426-5565-45e5-9d68-04df24596fb3",
+			"id": "e0501966-0f49-4a4f-abdd-31fb348c0090",
 			"key": "questionId",
 			"value": "",
 			"type": "string"
