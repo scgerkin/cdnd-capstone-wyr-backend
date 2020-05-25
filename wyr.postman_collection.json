@@ -66,10 +66,16 @@
 			"name": "new question",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"userId\":\"sarahedo\",\n\t\"optionOneText\": \"the first option\",\n\t\"optionTwoText\": \"the second option\"\n}",
+					"raw": "{\n\t\"optionOneText\": \"add question to user\",\n\t\"optionTwoText\": \"user to question add\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -98,9 +104,15 @@
 			"name": "question by id",
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/580420c5-e8e3-4f0a-b882-7da279bda944",
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/{{questionId}}",
 					"protocol": "https",
 					"host": [
 						"ivuwqxdyi3",
@@ -112,7 +124,7 @@
 					"path": [
 						"dev",
 						"questions",
-						"580420c5-e8e3-4f0a-b882-7da279bda944"
+						"{{questionId}}"
 					]
 				}
 			},
@@ -122,9 +134,15 @@
 			"name": "question by id",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkhNelNyak1vdTN2ODlUUDJ1ak16ViJ9.eyJpc3MiOiJodHRwczovL3NjZ3JrLWRldi5hdXRoMC5jb20vIiwic3ViIjoiWUFxTnZ2UHlKWjN4ZGlRRkk2TDFOZHpSOEwzQWt1YXNAY2xpZW50cyIsImF1ZCI6Ind5ci5zY2dyay5jb20iLCJpYXQiOjE1OTAyNjczMTgsImV4cCI6MTU5MDM1MzcxOCwiYXpwIjoiWUFxTnZ2UHlKWjN4ZGlRRkk2TDFOZHpSOEwzQWt1YXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.nw-zVCCUFzlzgbUinJ7zAzQc06I_eIDmBTa_fcoFzZU_B5AaRv_I7qQ2DfV3jIEhKrFyvR2ujnNfC1hXoAwZ2QTCFfBbvkxWjk7cZ2Z1MzvxIF1O6YcfDDSfuX8Y9Ka1UQjS5xYtBH0dgmHCnDaZ-WtYuqBDgxKTdYoiDr7y6HFM8lZrF0R1BCXN4yAQPW-_nnLfU0H2fPHVF8LW9vF6I7figfvsmlpRtSyDDEP9n3akhfU-gHs7fKcgw3L-oQvKrbF6hCkV85LV_JAQ0JMpvm-_Mtj-azpUXR98nC5750bz9JsD_tb03KAt81MqkaF_RSvHgVlVpXiQwTnQFKAFyA",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/am8ehyc8byjqgar0jgpub9",
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/questions/{{questionId}}",
 					"protocol": "https",
 					"host": [
 						"ivuwqxdyi3",
@@ -136,7 +154,7 @@
 					"path": [
 						"dev",
 						"questions",
-						"am8ehyc8byjqgar0jgpub9"
+						"{{questionId}}"
 					]
 				}
 			},
@@ -194,10 +212,16 @@
 			"name": "cast vote",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"questionId\":\"am8ehyc8byjqgar0jgpub9\",\n\t\"option\":\"optionOne\",\n\t\"userId\":\"johndoe\"\n}",
+					"raw": "{\n\t\"questionId\":\"am8ehyc8byjqgar0jgpub9\",\n\t\"option\":\"optionone\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -221,6 +245,169 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "jwks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://scgrk-dev.auth0.com/.well-known/jwks.json",
+					"protocol": "https",
+					"host": [
+						"scgrk-dev",
+						"auth0",
+						"com"
+					],
+					"path": [
+						".well-known",
+						"jwks.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get upload url",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users/uploadUrl?ext=jpg",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users",
+						"uploadUrl"
+					],
+					"query": [
+						{
+							"key": "ext",
+							"value": "jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": {\n\t\t\"name\":\"testUserCreation\",\n\t\t\"email\":\"none@example.com\",\n\t\t\"user_id\":\"auth0|12345\",\n\t\t\"nickname\":\"none@example.com\",\n\t\t\"picture\":\"http://placekitten.com/50/50\"\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update display name",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"newName\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ivuwqxdyi3.execute-api.us-east-1.amazonaws.com/dev/users",
+					"protocol": "https",
+					"host": [
+						"ivuwqxdyi3",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "874b6f1f-7556-4b1b-9323-75940cce1478",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "74128221-3ec4-41b6-b91e-1c7fcd7ab151",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "93f85690-a762-4586-b25e-29a46ac431a8",
+			"key": "jwt",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "e0501966-0f49-4a4f-abdd-31fb348c0090",
+			"key": "questionId",
+			"value": "",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}

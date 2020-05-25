@@ -134,6 +134,11 @@ functions:
           - dynamodb:PutItem
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUESTION_IDS_BY_DATE_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
     events:
       - stream:
           type: dynamodb
@@ -224,6 +229,22 @@ functions:
           method: get
           authorizer: Auth
           path: users/uploadUrl
+          cors: true
+
+  UpdateUser:
+    handler: src/lambda/users/updateUser.handler
+    iamRoleStatementsName: UpdateUser
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+    events:
+      - http:
+          method: put
+          authorizer: Auth
+          path: users
           cors: true
 
 resources:

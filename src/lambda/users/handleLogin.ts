@@ -12,6 +12,8 @@ import {internalError, requestSuccess} from "../shared"
 
 const logger = createLogger("handleLogin")
 
+const newUserPicture = "https://would-you-rather-backend-dev-avatars.s3.amazonaws.com/question-mark.png"
+
 /**
  * Executed by Auth0 on login event. Checks if the user exists in the database.
  * Puts the user into the database (if not already present). This also has the
@@ -78,7 +80,7 @@ function createUser(auth0User: Auth0User): User {
     name: auth0User.user.name,
     email: auth0User.user.email,
     nickname: auth0User.user.nickname,
-    avatarUrl: auth0User.user.picture,
+    avatarUrl: newUserPicture,
     answers: [],
     questions: []
   }
