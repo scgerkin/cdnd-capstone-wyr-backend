@@ -1,11 +1,14 @@
 import {v4 as uuidv4} from 'uuid';
 import {DateRecordRequest, Question, QuestionDateRecord} from "../models/Question"
+import {User} from "../models/User"
 import {getDateRecordCount, getDateRecords} from "../repositories/QuestionDateRepository"
 import * as repo from "../repositories/QuestionRepository"
+import {putUser} from "../repositories/UserRepository"
 import {CastVoteRequest} from "../requests/CastVoteRequest"
 import {CreateQuestionRequest} from "../requests/CreateQuestionRequest"
 import {getYearMonthDateString} from "../utils/formatters"
 import {createLogger} from "../utils/logger"
+import {getUserById} from "./UserService"
 
 const logger = createLogger("QuestionService");
 
@@ -156,43 +159,65 @@ export async function getQuestionsByDate(request: DateRecordRequest): Promise<an
 }
 
 /**
- * add-doc
+ * Adds or removes a vote to a Question option and saves to the database.
+ * TODO
+ *  Due to frontend modelling, this also needs to be persisted in the User record.
+ *  This is also done here, but ideally should be managed by the Question stream.
+ *  This is a quick fix for now.
  * @param request
  */
 export async function addVoteToQuestion(request: CastVoteRequest): Promise<Question> {
   let question = await getQuestionById(request.questionId)
+  let user = await getUserById(request.userId)
 
-  question = removeExistingVote(question, request.userId)
+  question = removeVoteFromQuestion(question, request.userId)
+  user = removeVoteFromUser(user, request.questionId)
 
-  //fixme this can probably be simplified to use 'question[request.option]: ...'
-  if (request.option.toLowerCase().trim() === "optionone") {
-    question = {
+  //fixme this is a bit of a mess
+  switch(request.option.toLowerCase().trim()) {
+    case "optionone": question = {
       ...question,
       optionOne: {
         ...question.optionOne,
         votes: question.optionOne.votes.concat([request.userId])
       }
     }
-  } else if (request.option.toLowerCase().trim() === "optiontwo") {
-    question = {
+      user.answers = user.answers.concat([{
+        questionId: request.questionId,
+        answer: request.option
+      }])
+    break;
+    case "optiontwo": question = {
       ...question,
       optionTwo: {
         ...question.optionTwo,
         votes: question.optionTwo.votes.concat([request.userId])
       }
     }
-  } else {
-    throw new Error(JSON.stringify({
+      user.answers = user.answers.concat([{
+        questionId: request.questionId,
+        answer: request.option
+      }])
+    break;
+    case "remove": break;
+    default: throw new Error(JSON.stringify({
       message: "The option text was not matched to an existing option.",
-      expected: "'optionOne' or 'optionTwo'",
+      expected: "'optionOne', 'optionTwo', or 'remove' (case insensitive)",
       received: request.option
     }))
   }
-
+  await putUser(user)
   return await repo.putQuestion(question)
 }
 
-function removeExistingVote(question: Question, userId: string): Question {
+function removeVoteFromUser(user: User, questionId: string): User {
+  return {
+    ...user,
+    answers: user.answers.filter(a => a.questionId !== questionId)
+  }
+}
+
+function removeVoteFromQuestion(question: Question, userId: string): Question {
   if (question.optionOne.votes.includes(userId)) {
     question = {
       ...question,
