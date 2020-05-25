@@ -35,6 +35,9 @@ provider:
     USERS_TABLE: users-${self:service.name}-${self:provider.stage}
     USER_ID_INDEX: userId
 
+    AVATAR_BUCKET: ${self:service.name}-${self:provider.stage}-avatars
+    URL_EXPIRATION_IN_SECONDS: 300
+
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
@@ -198,6 +201,26 @@ functions:
           path: users/list
           cors: true
 
+  GetUploadUrl:
+    handler: src/lambda/s3/getUploadUrl.handler
+    iamRoleStatementsName: GetUploadUrl
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: arn:aws:s3:::${self:provider.environment.AVATAR_BUCKET}/*
+    events:
+      - http:
+          method: get
+          authorizer: Auth
+          path: users/uploadUrl
+          cors: true
+
 resources:
   Resources:
     GatewayResponseDefault4xx:
@@ -267,3 +290,35 @@ resources:
           - AttributeName: ${self:provider.environment.USER_ID_INDEX}
             KeyType: HASH
 
+    AvatarS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.AVATAR_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    AvatarBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: ${self:provider.environment.AVATAR_BUCKET}-policy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.AVATAR_BUCKET}/*'
+        Bucket: !Ref AvatarS3Bucket
