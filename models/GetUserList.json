@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "GetUserList",
+  "type": "object",
+  "properties": {
+    "userIds": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "userIds"
+  ],
+  "additionalProperties": false
+}

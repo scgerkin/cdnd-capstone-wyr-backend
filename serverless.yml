@@ -5,12 +5,33 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  documentation:
+    api:
+      info:
+        version: v0.0.1
+        title: Would You Rather (Backend)
+        description: Serverless backend persistence for the Would You Rather application
+    models:
+      - name: AddNewQuestion
+        contentType: application/json
+        schema: ${file(models/AddNewQuestion.json)}
+      - name: CastVote
+        contentType: application/json
+        schema: ${file(models/CastVote.json)}
+      - name: GetUserList
+        contentType: application/json
+        schema: ${file(models/GetUserList.json)}
+      - name: UpdateUser
+        contentType: application/json
+        schema: ${file(models/UpdateUser.json)}
 
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-offline
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -38,6 +59,8 @@ provider:
     AVATAR_BUCKET: ${self:service.name}-${self:provider.stage}-avatars
     URL_EXPIRATION_IN_SECONDS: 300
 
+    REQUEST_VALIDATOR: request-body-validator
+
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
@@ -56,6 +79,10 @@ functions:
           authorizer: Auth
           path: questions
           cors: true
+          reqValidatorName: !Ref RequestBodyValidator
+          documentation:
+            requestModels:
+              application/json: AddNewQuestion
 
   DeleteQuestion:
     handler: src/lambda/questions/deleteQuestion.handler
@@ -167,6 +194,10 @@ functions:
           authorizer: Auth
           path: questions
           cors: true
+          reqValidatorName: !Ref RequestBodyValidator
+          documentation:
+            requestModels:
+              application/json: CastVote
 
   HandleLogin:
     handler: src/lambda/users/handleLogin.handler
@@ -210,6 +241,10 @@ functions:
           method: post
           path: users/list
           cors: true
+          reqValidatorName: !Ref RequestBodyValidator
+          documentation:
+            requestModels:
+              application/json: GetUserList
 
   GetUploadUrl:
     handler: src/lambda/s3/getUploadUrl.handler
@@ -246,7 +281,10 @@ functions:
           authorizer: Auth
           path: users
           cors: true
-
+          reqValidatorName: !Ref RequestBodyValidator
+          documentation:
+            requestModels:
+              application/json: UpdateUser
 resources:
   Resources:
     GatewayResponseDefault4xx:
@@ -258,6 +296,15 @@ resources:
           gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
         ResponseType: DEFAULT_4XX
         RestApiId: !Ref ApiGatewayRestApi
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: ${self:provider.environment.REQUEST_VALIDATOR}
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
 
     QuestionsDynamoDBTable:
       Type: AWS::DynamoDB::Table

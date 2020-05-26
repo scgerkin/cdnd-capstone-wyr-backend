@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "GetUserList",
+  "type": "object",
+  "properties": {
+    "questionId": {
+      "type": "string"
+    },
+    "option": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "questionId",
+    "option"
+  ],
+  "additionalProperties": false
+}

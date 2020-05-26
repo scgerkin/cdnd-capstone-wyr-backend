@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "AddNewQuestion",
+  "type": "object",
+  "properties": {
+    "optionOneText": {
+      "type": "string"
+    },
+    "optionTwoText": {
+      "type": "string"
+    },
+    "userId": {
+      "type":"string"
+    }
+  },
+  "required": [
+    "optionOneText",
+    "optionTwoText"
+  ],
+  "additionalProperties": false
+}
