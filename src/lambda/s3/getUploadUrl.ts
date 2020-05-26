@@ -15,7 +15,7 @@ import {badRequest, internalError, invalidUserId, requestSuccess} from "../share
 const logger = createLogger("getUploadUrl")
 
 const bucketName = process.env.AVATAR_BUCKET
-const baseUrl = `http://${bucketName}.s3.amazonaws.com/`
+const baseUrl = `https://${bucketName}.s3.amazonaws.com/`
 const urlExpiration = Number(process.env.URL_EXPIRATION_IN_SECONDS)
 const s3 = new AWS.S3({signatureVersion: "v4"})
 
